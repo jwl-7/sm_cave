@@ -100,6 +100,11 @@ public Action Command_LoadLoc(int client, int args)
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!loadloc");
         return Plugin_Handled;
     }
+    if (g_aPosition[client].Length == 0)
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] No saved locations found.");
+        return Plugin_Handled;
+    }
     else
     {
         if (args == 0)
@@ -120,7 +125,7 @@ public Action Command_LoadLoc(int client, int args)
             int id = StringToInt(arg[1]);
             if (id < 0 || id > g_aPosition[client].Length - 1)
             {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location!");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location.");
                 return Plugin_Handled;
             }
             else
@@ -139,7 +144,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     if (g_aPosition[client].Length == MAX_LOCS)
     {
         ClearClientLocations(client);
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Max locations reached! Resetting saved locations.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Max locations reached, resetting.");
     }
 
     g_iCurrLoc[client] = g_aPosition[client].Length;
