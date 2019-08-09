@@ -60,7 +60,7 @@ public Action Command_ColorMe(int client, int args)
     ColorMenu.AddItem("96,125,139", "Blue Grey");
     ColorMenu.AddItem("0,0,0", "Black");
     ColorMenu.AddItem("255,215,0", "Gold");
-    ColorMenu.Display(client, 20);
+    ColorMenu.Display(client, MENU_TIME_FOREVER);
 
     return Plugin_Handled;
 }
