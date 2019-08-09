@@ -15,11 +15,11 @@ static int g_iCurrLoc[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
-    name = "SaveLoc",
-    author = "JWL",
+    name        = "SaveLoc",
+    author      = "JWL",
     description = "saveloc/loadloc",
-    version = "1.0",
-    url = ""
+    version     = "1.0",
+    url         = ""
 };
 
 // ====[ EVENTS ]====
