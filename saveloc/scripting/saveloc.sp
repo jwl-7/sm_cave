@@ -25,8 +25,8 @@ public Plugin myinfo =
 // ====[ EVENTS ]====
 public void OnPluginStart()
 {
-    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save current location/velocity.");
-    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load last location/velocity.");
+    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location/velocity. Usage: !saveloc");
+    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location/velocity. Usage: !loadloc <#id>");
 
     for (int i = 1; i <= MaxClients; i++) 
     {
@@ -63,12 +63,12 @@ public Action Command_SaveLoc(int client, int args)
     }
     if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "{lime}[SaveLoc] {grey}You must join a team to use sm_saveloc!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!saveloc");
         return Plugin_Handled;
     }
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "{lime}[SaveLoc] {grey}You must be alive to use sm_saveloc!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!saveloc");
         return Plugin_Handled;
     }
 
@@ -92,12 +92,12 @@ public Action Command_LoadLoc(int client, int args)
     }
     if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "{lime}[SaveLoc] {grey}You must join a team to use sm_loadloc!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!loadloc");
         return Plugin_Handled;
     }
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "{lime}[SaveLoc] {grey}You must be alive to use sm_loadloc!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!loadloc");
         return Plugin_Handled;
     }
     else
@@ -113,14 +113,14 @@ public Action Command_LoadLoc(int client, int args)
             GetCmdArg(1, arg, sizeof(arg));
             if (arg[0] != '#')
             {
-                CPrintToChat(client, "{lime}[SaveLoc] {grey}sm_loadloc usage: !loadloc #<id>");
+                CPrintToChat(client, "[{green}SaveLoc{default}] Usage: {purple}!loadloc #<id>");
                 return Plugin_Handled;
             }
 
             int id = StringToInt(arg[1]);
             if (id < 0 || id > g_aPosition[client].Length - 1)
             {
-                CPrintToChat(client, "{lime}[SaveLoc] {grey}Invalid location!");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location!");
                 return Plugin_Handled;
             }
             else
@@ -133,14 +133,13 @@ public Action Command_LoadLoc(int client, int args)
     return Plugin_Handled;
 }
 
-
 // ====[ LOCAL FUNCTIONS ]====
 void SaveLocation(int client, float position[3], float angles[3], float velocity[3])
 {
     if (g_aPosition[client].Length == MAX_LOCS)
     {
         ClearClientLocations(client);
-        CPrintToChat(client, "{lime}[SaveLoc] {grey}Max saved locations reached, resetting!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Max locations reached! Resetting saved locations.");
     }
 
     g_iCurrLoc[client] = g_aPosition[client].Length;
@@ -148,7 +147,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     g_aAngles[client].PushArray(angles);
     g_aVelocity[client].PushArray(velocity);
 
-    CPrintToChat(client, "{lime}[SaveLoc] {grey}Location #%i saved.", g_iCurrLoc[client]);
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Saved {lime}#%i", g_iCurrLoc[client]);
 }
 
 void LoadLocation(int client, int id)
@@ -163,7 +162,7 @@ void LoadLocation(int client, int id)
     g_aVelocity[client].GetArray(id, velocity, sizeof(velocity));
 
     TeleportEntity(client, position, angles, velocity);
-    CPrintToChat(client, "{lime}[SaveLoc] {grey}Location #%i loaded!", g_iCurrLoc[client]);
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i", g_iCurrLoc[client]);
 }
 
 void ClearClientLocations(int client)
