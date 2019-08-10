@@ -2,7 +2,7 @@
 This plugin allows the player to change the color of their player model.
 
 ## Commands
-* sm_colorme - Change color of player model.
+* sm_colorme - Change color of player model. Usage: ```!colorme```
 
 ## Features
 * Menu with flat ui color choices

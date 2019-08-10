@@ -18,7 +18,7 @@ public Plugin myinfo =
 // ====[ EVENTS ]====
 public OnPluginStart() 
 {
-    RegConsoleCmd("sm_colorme", Command_ColorMe, "Change color of player model.");
+    RegConsoleCmd("sm_colorme", Command_ColorMe, "Change color of player model. Usage: !colorme");
     mp_forcecamera = FindConVar("mp_forcecamera");
 }
 
