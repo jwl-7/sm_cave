@@ -11,9 +11,8 @@
 static ArrayList g_aPosition[MAXPLAYERS+1];
 static ArrayList g_aAngles[MAXPLAYERS+1];
 static ArrayList g_aVelocity[MAXPLAYERS+1];
-static int g_iCurrLoc[MAXPLAYERS+1];
-
 static bool g_bLocMenuOpen[MAXPLAYERS+1];
+static int g_iCurrLoc[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
@@ -143,7 +142,7 @@ public Action Command_LocMenu(int client, int args)
         CPrintToChat(client, "[{green}SaveLoc{default}] No saved locations found.");
         return Plugin_Handled;
     }
-    
+
     showLocMenu(client);
 
     return Plugin_Handled;
@@ -186,7 +185,6 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
             ReplaceString(loc, sizeof(loc), "#", "");
 
             int id = StringToInt(loc);
-
             if (id == g_iCurrLoc[client])
             {
                 Format(loc, sizeof(loc), ">#%i", id);
