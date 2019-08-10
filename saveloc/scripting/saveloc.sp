@@ -6,7 +6,7 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#define MAX_LOCATIONS 20
+#define MAX_LOCATIONS 1024
 
 static ArrayList g_aPosition;
 static ArrayList g_aAngles;
@@ -20,7 +20,7 @@ public Plugin myinfo =
 {
     name        = "SaveLoc",
     author      = "JWL",
-    description = "saveloc/loadloc",
+    description = "Save/Load Locations",
     version     = "1.0",
     url         = ""
 };
