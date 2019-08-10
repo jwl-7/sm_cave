@@ -117,26 +117,6 @@ public Action Command_LoadLoc(int client, int args)
         }
         else
         {
-            /*
-            char arg[32];
-            GetCmdArg(1, arg, sizeof(arg));
-            if (arg[0] != '#')
-            {
-                CPrintToChat(client, "[{green}SaveLoc{default}] Usage: {purple}!loadloc <#id>");
-                return Plugin_Handled;
-            }
-    
-            int id = StringToInt(arg[1]);
-            if (id < 0 || id > g_aPosition[client].Length - 1)
-            {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location.");
-                return Plugin_Handled;
-            }
-            else
-            {
-                LoadLocation(client, id);
-            }
-            */
             char arg[32];
             GetCmdArg(1, arg, sizeof(arg));
             if (arg[0] == '#')
@@ -154,13 +134,16 @@ public Action Command_LoadLoc(int client, int args)
             }
             else
             {
-                if (FindStringInArray(g_aSharedName, arg) != -1)
+                if (g_aSharedName.FindString(arg) == -1)
                 {
                     CPrintToChat(client, "[{green}SaveLoc{default}] No shared loc with that name found.");
                     return Plugin_Handled;
                 }
-                int id = FindStringInArray(g_aSharedName, arg);
-                LoadSharedLocation(client, id);
+                else
+                {
+                    int id = g_aSharedName.FindString(arg);
+                    LoadSharedLocation(client, id);
+                }
             }
         }
     }
@@ -196,7 +179,7 @@ public Action Command_ShareLoc(int client, int args)
                 return Plugin_Handled;
             }
 
-            if (FindStringInArray(g_aSharedName, name) != -1)
+            if (g_aSharedName.FindString(name) != -1)
             {
                 CPrintToChat(client, "[{green}SaveLoc{default}] Your loc name must be unique.");
             }
@@ -340,9 +323,9 @@ void ShareLocation(int client, char[] name)
     g_aSharedPosition.PushArray(position);
     g_aSharedAngles.PushArray(angles);
     g_aSharedVelocity.PushArray(velocity);
-    PushArrayString(g_aSharedName, name);
+    g_aSharedName.PushString(name);
 
-    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Shared {lime}#%i {grey} with the name {lime}%s", id, name);
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Shared {lime}#%i {grey}with the name {lime}%s", id, name);
 }
 
 void LoadSharedLocation(int client, int id)
@@ -350,13 +333,16 @@ void LoadSharedLocation(int client, int id)
     float position[3];
     float angles[3];
     float velocity[3];
+    char name[32];
 
     g_aSharedPosition.GetArray(id, position, sizeof(position));
     g_aSharedAngles.GetArray(id, angles, sizeof(angles));
     g_aSharedVelocity.GetArray(id, velocity, sizeof(velocity));
+    g_aSharedName.GetString(id, name, sizeof(name));
 
     TeleportEntity(client, position, angles, velocity);
-    //CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i", g_iCurrLoc[client]);
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}%s", name);
+    SaveLocation(client, position, angles, velocity);
 }
 
 void ClearClientLocations(int client)
