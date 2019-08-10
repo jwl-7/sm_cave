@@ -6,13 +6,15 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#define MAX_LOCS 128
+#define MAX_LOCATIONS 20
 
-static ArrayList g_aPosition[MAXPLAYERS+1];
-static ArrayList g_aAngles[MAXPLAYERS+1];
-static ArrayList g_aVelocity[MAXPLAYERS+1];
-static bool g_bLocMenuOpen[MAXPLAYERS+1];
-static int g_iCurrLoc[MAXPLAYERS+1];
+static ArrayList g_aPosition;
+static ArrayList g_aAngles;
+static ArrayList g_aVelocity;
+static ArrayList g_aLocationName;
+static ArrayList g_aLocationCreator;
+static bool g_bIsMenuOpen[MAXPLAYERS+1];
+static int g_iMostRecentLocation[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
@@ -26,34 +28,21 @@ public Plugin myinfo =
 // ====[ EVENTS ]====
 public void OnPluginStart()
 {
-    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location/velocity. Usage: !saveloc");
-    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location/velocity. Usage: !loadloc <#id>");
+    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc");
+    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location. Usage: !loadloc <#id OR name>");
     RegConsoleCmd("sm_locmenu", Command_LocMenu, "Show locations in menu. Usage: !locmenu");
+    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <name>");
 
-    for (int i = 1; i <= MaxClients; i++) 
-    {
-        g_aPosition[i] = new ArrayList(3);
-        g_aAngles[i] = new ArrayList(3);
-        g_aVelocity[i] = new ArrayList(3);
-    }
+    g_aPosition = new ArrayList(3);
+    g_aAngles = new ArrayList(3);
+    g_aVelocity = new ArrayList(3);
+    g_aLocationName = new ArrayList(32);
+    g_aLocationCreator = new ArrayList(MAX_NAME_LENGTH);
 }
 
 public void OnMapStart() 
 {
-    for (int i = 1; i <= MaxClients; i++)
-    {
-        ClearClientLocations(i);
-    }
-}
-
-public void OnClientConnected(int client) 
-{
-    ClearClientLocations(client);
-}
-
-public void OnClientDisconnect_Post(int client)
-{
-    ClearClientLocations(client);
+    ClearLocations();
 }
 
 // ====[ COMMANDS ]====
@@ -82,40 +71,35 @@ public Action Command_LoadLoc(int client, int args)
     {
         return Plugin_Handled;
     }
-    if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!loadloc");
-        return Plugin_Handled;
-    }
     if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!loadloc");
         return Plugin_Handled;
     }
-    if (g_aPosition[client].Length == 0)
+    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] No saved locations found.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!loadloc");
         return Plugin_Handled;
+    }
+    else if (g_aPosition.Length == 0)
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found.");
+        return Plugin_Handled;
+    }
+
+    if (args == 0)
+    {
+        int id = g_iMostRecentLocation[client];
+        LoadLocation(client, id);
     }
     else
     {
-        if (args == 0)
+        char arg[32];
+        GetCmdArg(1, arg, sizeof(arg));
+        if (arg[0] == '#') // check for location by <#id>
         {
-            int id = g_iCurrLoc[client];
-            LoadLocation(client, id);
-        }
-        else
-        {
-            char arg[32];
-            GetCmdArg(1, arg, sizeof(arg));
-            if (arg[0] != '#')
-            {
-                CPrintToChat(client, "[{green}SaveLoc{default}] Usage: {purple}!loadloc #<id>");
-                return Plugin_Handled;
-            }
-
             int id = StringToInt(arg[1]);
-            if (id < 0 || id > g_aPosition[client].Length - 1)
+            if (id < 0 || id > g_aPosition.Length - 1)
             {
                 CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location.");
                 return Plugin_Handled;
@@ -125,21 +109,83 @@ public Action Command_LoadLoc(int client, int args)
                 LoadLocation(client, id);
             }
         }
+        else // check for location by <name>
+        {
+            if (g_aLocationName.FindString(arg) == -1)
+            {
+                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations with that name found.");
+                return Plugin_Handled;
+            }
+            else
+            {
+                int id = g_aLocationName.FindString(arg);
+                LoadLocation(client, id);
+            }
+        }
     }
 
     return Plugin_Handled;
 }
 
+public Action Command_NameLoc(int client, int args)
+{
+    if (!client) 
+    {
+        return Plugin_Handled;
+    }
+
+    char creator[MAX_NAME_LENGTH];
+    char clientName[MAX_NAME_LENGTH];
+    int id = g_iMostRecentLocation[client];
+
+    g_aLocationCreator.GetString(id, creator, sizeof(creator));
+    GetClientName(client, clientName, sizeof(clientName));
+    if (!StrEqual(clientName, creator)) // check if client is creator of location
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be the creator of the location to use {purple}!nameloc");
+    }
+
+    if (args == 0)
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Usage: {purple}!nameloc <name>");
+        return Plugin_Handled;
+    }
+    else
+    {
+        char name[32];
+        GetCmdArg(1, name, sizeof(name));
+        if (name[0] == '#') // check if location resembles <#id>
+        {
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name must not start with {yellow}#");
+            return Plugin_Handled;
+        }
+        else if (g_aLocationName.FindString(name) != -1) // check for unique location name
+        {
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name already taken.");
+        }
+        else // set the location name
+        {
+            NameLocation(client, name);
+        }
+    }   
+
+    return Plugin_Handled; 
+}
+
 public Action Command_LocMenu(int client, int args)
 {
+    if (!client) 
+    {
+        return Plugin_Handled;
+    }
     if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!locmenu");
         return Plugin_Handled;
     }
-    if (g_aPosition[client].Length == 0)
+    else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] No saved locations found.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found.");
         return Plugin_Handled;
     }
 
@@ -151,22 +197,23 @@ public Action Command_LocMenu(int client, int args)
 // ====[ Build Menu ]====
 void showLocMenu(int client)
 {
-    Menu LocMenu = new Menu(LocMenuHandler, MENU_ACTIONS_ALL);
-    LocMenu.SetTitle("Locations");
+    Menu locMenu = new Menu(LocMenuHandler, MENU_ACTIONS_ALL);
+    locMenu.SetTitle("Locations");
 
-    for (int i = 0; i < g_aPosition[client].Length; i++)
+    for (int i = 0; i < g_aPosition.Length; i++)
     {
-        char loc[8];
-        Format(loc, sizeof(loc), "#%i", i);
-        LocMenu.AddItem(loc, loc);
+        char loc[12];
+        Format(loc, sizeof(loc), "%i", i);
+        locMenu.AddItem(loc, loc);
     }
 
     int firstItem;
-    if (g_iCurrLoc[client] > 5)
+    if (g_iMostRecentLocation[client] > 5)
     {
-        firstItem = g_iCurrLoc[client] - (g_iCurrLoc[client] % 6);                
+        firstItem = g_iMostRecentLocation[client] - (g_iMostRecentLocation[client] % 6);                
     }
-    LocMenu.DisplayAt(client, firstItem, MENU_TIME_FOREVER);
+
+    locMenu.DisplayAt(client, firstItem, MENU_TIME_FOREVER);
 }
 
 // ====[ Menu Handler ]====
@@ -176,24 +223,30 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
     {
         case MenuAction_Display:
         {
-            g_bLocMenuOpen[client] = true;
+            g_bIsMenuOpen[client] = true;
         }
         case MenuAction_DisplayItem:
         {
-            char loc[8];
+            char loc[12];
             menu.GetItem(choice, loc, sizeof(loc));
-            ReplaceString(loc, sizeof(loc), "#", "");
-
             int id = StringToInt(loc);
-            if (id == g_iCurrLoc[client])
+            char name[32];
+            g_aLocationName.GetString(id, name, sizeof(name));
+
+            if (id == g_iMostRecentLocation[client])
             {
-                Format(loc, sizeof(loc), ">#%i", id);
-                return RedrawMenuItem(loc);
+                Format(loc, sizeof(loc), "> #%i %s", id, name);
             }
+            else
+            {
+                Format(loc, sizeof(loc), "#%i %s", id, name);
+            }
+
+            return RedrawMenuItem(loc);
         }
         case MenuAction_Select:
         {
-            char loc[8];
+            char loc[12];
             menu.GetItem(choice, loc, sizeof(loc));
             ReplaceString(loc, sizeof(loc), "#", "");
 
@@ -203,7 +256,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         }
         case MenuAction_Cancel:
         {
-            g_bLocMenuOpen[client] = false;
+            g_bIsMenuOpen[client] = false;
         }
     }
     
@@ -213,23 +266,31 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 // ====[ LOCAL FUNCTIONS ]====
 void SaveLocation(int client, float position[3], float angles[3], float velocity[3])
 {
-    if (g_aPosition[client].Length == MAX_LOCS)
+    if (g_aPosition.Length == MAX_LOCATIONS)
     {
-        ClearClientLocations(client);
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Max locations reached, resetting.");
+        ClearLocations();
+        CPrintToChatAll("[{green}SaveLoc{default}] {grey}Max saved locations reached! Resetting.");
     }
 
-    g_iCurrLoc[client] = g_aPosition[client].Length;
-    g_aPosition[client].PushArray(position);
-    g_aAngles[client].PushArray(angles);
-    g_aVelocity[client].PushArray(velocity);
+    char creator[MAX_NAME_LENGTH];
+    GetClientName(client, creator, sizeof(creator));
+    g_iMostRecentLocation[client] = g_aPosition.Length;
+    g_aPosition.PushArray(position);
+    g_aAngles.PushArray(angles);
+    g_aVelocity.PushArray(velocity);
+    g_aLocationName.PushString("");
+    g_aLocationCreator.PushString(creator);
 
-    if (g_bLocMenuOpen[client])
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Saved {lime}#%i", g_iMostRecentLocation[client]);
+
+    // refresh menu
+    for (int i = 1; i <= MaxClients; i++)
     {
-        showLocMenu(client);
+        if (g_bIsMenuOpen[i])
+        {
+            showLocMenu(i);
+        }
     }
-
-    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Saved {lime}#%i", g_iCurrLoc[client]);
 }
 
 void LoadLocation(int client, int id)
@@ -237,20 +298,67 @@ void LoadLocation(int client, int id)
     float position[3];
     float angles[3];
     float velocity[3];
+    char name[32];
+    char creator[MAX_NAME_LENGTH];
+    char clientName[MAX_NAME_LENGTH];
 
-    g_iCurrLoc[client] = id;
-    g_aPosition[client].GetArray(id, position, sizeof(position));
-    g_aAngles[client].GetArray(id, angles, sizeof(angles));
-    g_aVelocity[client].GetArray(id, velocity, sizeof(velocity));
+    if (g_iMostRecentLocation[client] != id)
+    {
+        g_iMostRecentLocation[client] = id;
+        if (g_bIsMenuOpen[client]) // refresh menu
+        {
+            showLocMenu(client);
+        }
+    }
 
+    g_aPosition.GetArray(id, position, sizeof(position));
+    g_aAngles.GetArray(id, angles, sizeof(angles));
+    g_aVelocity.GetArray(id, velocity, sizeof(velocity));
+    g_aLocationName.GetString(id, name, sizeof(name));
+    g_aLocationCreator.GetString(id, creator, sizeof(creator));
+    GetClientName(client, clientName, sizeof(clientName));
     TeleportEntity(client, position, angles, velocity);
-    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i", g_iCurrLoc[client]);
+
+    if (StrEqual(clientName, creator))
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s", g_iMostRecentLocation[client], name);
+    }
+    else if (StrEqual(name, ""))
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {grey}| Created by {yellow}%s", g_iMostRecentLocation[client], creator);
+    }
+    else if (!StrEqual(name, ""))
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {grey}| Created by {yellow}%s", g_iMostRecentLocation[client], name, creator);
+    }
 }
 
-void ClearClientLocations(int client)
+void NameLocation(int client, char[] name)
 {
-    g_aPosition[client].Clear();
-    g_aAngles[client].Clear();
-    g_aVelocity[client].Clear();
-    g_iCurrLoc[client] = -1;
+    int id = g_iMostRecentLocation[client];
+    g_aLocationName.SetString(id, name);
+    CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Named {lime}#%i {yellow}%s", id, name);
+
+    // refresh menu
+    for (int i = 1; i <= MaxClients; i++)
+    {
+        if (g_bIsMenuOpen[i])
+        {
+            showLocMenu(i);
+        }
+    }
+}
+
+void ClearLocations()
+{
+    g_aPosition.Clear();
+    g_aAngles.Clear();
+    g_aVelocity.Clear();
+    g_aLocationName.Clear();
+    g_aLocationCreator.Clear();
+
+    for (int i = 1; i <= MaxClients; i++)
+    {
+        g_iMostRecentLocation[i] = -1;
+    }
 }
