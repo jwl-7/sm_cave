@@ -89,7 +89,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
             int g = StringToInt(rgb[1]);
             int b = StringToInt(rgb[2]);
             SetEntityRenderColor(client, r, g, b);
-            CPrintToChat(client, "[{green}ColorMe{default}] Player model set to {lime}%s", colorName);
+            CPrintToChat(client, "[{green}ColorMe{default}] {grey}Player model set to {lime}%s", colorName);
         }
 
         case MenuAction_Cancel:
