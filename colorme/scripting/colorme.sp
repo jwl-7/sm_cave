@@ -12,7 +12,7 @@ public Plugin myinfo =
     author      = "JWL", 
     description = "Color Yourself", 
     version     = "2.0", 
-    url         = "" 
+    url         = "https://github.com/jwl-7/sm_cave" 
 }; 
 
 // ====[ EVENTS ]====
@@ -36,33 +36,39 @@ public Action Command_ColorMe(int client, int args)
         return Plugin_Handled;
     }
 
-    Menu ColorMenu = new Menu(ColorMenuHandler, MENU_ACTIONS_ALL);
-    ColorMenu.SetTitle("Color Me");
-    ColorMenu.AddItem("255,255,255", "None");
-    ColorMenu.AddItem("244,67,54", "Red");
-    ColorMenu.AddItem("255,152,0", "Orange");
-    ColorMenu.AddItem("255,235,59", "Yellow");
-    ColorMenu.AddItem("76,175,80", "Green");
-    ColorMenu.AddItem("33,150,243", "Blue");
-    ColorMenu.AddItem("63,81,181", "Indigo");
-    ColorMenu.AddItem("156,39,176", "Purple");
-    ColorMenu.AddItem("103,58,183", "Deep Purple");
-    ColorMenu.AddItem("233,30,99", "Pink");
-    ColorMenu.AddItem("3,169,244", "Light Blue");
-    ColorMenu.AddItem("0,188,212", "Cyan");
-    ColorMenu.AddItem("0,150,136", "Teal");
-    ColorMenu.AddItem("139,195,74", "Light Green");
-    ColorMenu.AddItem("205,220,57", "Lime");
-    ColorMenu.AddItem("255,193,7", "Amber");
-    ColorMenu.AddItem("255,87,34", "Deep Orange")
-    ColorMenu.AddItem("121,85,72", "Brown");
-    ColorMenu.AddItem("158,158,158", "Grey");
-    ColorMenu.AddItem("96,125,139", "Blue Grey");
-    ColorMenu.AddItem("0,0,0", "Black");
-    ColorMenu.AddItem("255,215,0", "Gold");
-    ColorMenu.Display(client, MENU_TIME_FOREVER);
+    ShowColorMenu(client, 0);
 
     return Plugin_Handled;
+}
+
+// ====[ Build Menu ]====
+void ShowColorMenu(int client, int selection)
+{
+    Menu colorMenu = new Menu(ColorMenuHandler, MENU_ACTIONS_ALL);
+    colorMenu.SetTitle("Color Me");
+    colorMenu.AddItem("255,255,255", "None");
+    colorMenu.AddItem("244,67,54", "Red");
+    colorMenu.AddItem("255,152,0", "Orange");
+    colorMenu.AddItem("255,235,59", "Yellow");
+    colorMenu.AddItem("76,175,80", "Green");
+    colorMenu.AddItem("33,150,243", "Blue");
+    colorMenu.AddItem("63,81,181", "Indigo");
+    colorMenu.AddItem("156,39,176", "Purple");
+    colorMenu.AddItem("103,58,183", "Deep Purple");
+    colorMenu.AddItem("233,30,99", "Pink");
+    colorMenu.AddItem("3,169,244", "Light Blue");
+    colorMenu.AddItem("0,188,212", "Cyan");
+    colorMenu.AddItem("0,150,136", "Teal");
+    colorMenu.AddItem("139,195,74", "Light Green");
+    colorMenu.AddItem("205,220,57", "Lime");
+    colorMenu.AddItem("255,193,7", "Amber");
+    colorMenu.AddItem("255,87,34", "Deep Orange")
+    colorMenu.AddItem("121,85,72", "Brown");
+    colorMenu.AddItem("158,158,158", "Grey");
+    colorMenu.AddItem("96,125,139", "Blue Grey");
+    colorMenu.AddItem("0,0,0", "Black");
+    colorMenu.AddItem("255,215,0", "Gold");
+    colorMenu.DisplayAt(client, selection, MENU_TIME_FOREVER);
 }
 
 // ====[ Menu Handler ]====
@@ -79,10 +85,8 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
         {
             char colorValue[12];
             char colorName[32]
-            menu.GetItem(choice, colorValue, sizeof(colorValue), _, colorName, sizeof(colorName));
-            menu.DisplayAt(client, GetMenuSelectionPosition(), MENU_TIME_FOREVER);
-            
             char rgb[3][4];
+            menu.GetItem(choice, colorValue, sizeof(colorValue), _, colorName, sizeof(colorName));
             ExplodeString(colorValue, ",", rgb, sizeof(rgb), sizeof(rgb[]));
 
             int r = StringToInt(rgb[0]);
@@ -90,11 +94,18 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
             int b = StringToInt(rgb[2]);
             SetEntityRenderColor(client, r, g, b);
             CPrintToChat(client, "[{green}ColorMe{default}] {grey}Player model set to {lime}%s", colorName);
+
+            ShowColorMenu(client, menu.Selection);
         }
 
         case MenuAction_Cancel:
         {
             SetModelView(client, false);
+        }
+
+        case MenuAction_End:
+        {
+            delete menu;
         }
     }
     
