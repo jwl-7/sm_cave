@@ -7,6 +7,7 @@
 #pragma semicolon 1
 
 #define MAX_LOCATIONS 1024
+#define MAX_LOCATION_NAME_LENGTH 32
 
 static ArrayList g_aPosition;
 static ArrayList g_aAngles;
@@ -36,7 +37,7 @@ public void OnPluginStart()
     g_aPosition = new ArrayList(3);
     g_aAngles = new ArrayList(3);
     g_aVelocity = new ArrayList(3);
-    g_aLocationName = new ArrayList(32);
+    g_aLocationName = new ArrayList(MAX_LOCATION_NAME_LENGTH);
     g_aLocationCreator = new ArrayList(MAX_NAME_LENGTH);
 }
 
@@ -94,7 +95,7 @@ public Action Command_LoadLoc(int client, int args)
     }
     else
     {
-        char arg[32];
+        char arg[MAX_LOCATION_NAME_LENGTH];
         GetCmdArg(1, arg, sizeof(arg));
         if (arg[0] == '#') // check for location by <#id>
         {
@@ -152,7 +153,7 @@ public Action Command_NameLoc(int client, int args)
     }
     else
     {
-        char name[32];
+        char name[MAX_LOCATION_NAME_LENGTH];
         GetCmdArg(1, name, sizeof(name));
         if (name[0] == '#') // check if location resembles <#id>
         {
@@ -202,7 +203,7 @@ void showLocMenu(int client)
 
     for (int i = 0; i < g_aPosition.Length; i++)
     {
-        char loc[12];
+        char loc[MAX_LOCATION_NAME_LENGTH];
         Format(loc, sizeof(loc), "%i", i);
         locMenu.AddItem(loc, loc);
     }
@@ -227,10 +228,10 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         }
         case MenuAction_DisplayItem:
         {
-            char loc[12];
+            char loc[MAX_LOCATION_NAME_LENGTH];
             menu.GetItem(choice, loc, sizeof(loc));
             int id = StringToInt(loc);
-            char name[32];
+            char name[MAX_LOCATION_NAME_LENGTH];
             g_aLocationName.GetString(id, name, sizeof(name));
 
             if (id == g_iMostRecentLocation[client])
@@ -246,7 +247,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         }
         case MenuAction_Select:
         {
-            char loc[12];
+            char loc[MAX_LOCATION_NAME_LENGTH];
             menu.GetItem(choice, loc, sizeof(loc));
             ReplaceString(loc, sizeof(loc), "#", "");
 
@@ -298,7 +299,7 @@ void LoadLocation(int client, int id)
     float position[3];
     float angles[3];
     float velocity[3];
-    char name[32];
+    char name[MAX_LOCATION_NAME_LENGTH];
     char creator[MAX_NAME_LENGTH];
     char clientName[MAX_NAME_LENGTH];
 
