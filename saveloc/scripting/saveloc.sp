@@ -34,11 +34,11 @@ public void OnPluginStart()
     RegConsoleCmd("sm_locmenu", Command_LocMenu, "Show locations in menu. Usage: !locmenu");
     RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <name>");
 
-    g_aPosition = new ArrayList(3);
-    g_aAngles = new ArrayList(3);
-    g_aVelocity = new ArrayList(3);
-    g_aLocationName = new ArrayList(MAX_LOCATION_NAME_LENGTH);
-    g_aLocationCreator = new ArrayList(MAX_NAME_LENGTH);
+    g_aPosition = new ArrayList(ByteCountToCells(3));
+    g_aAngles = new ArrayList(ByteCountToCells(3));
+    g_aVelocity = new ArrayList(ByteCountToCells(3));
+    g_aLocationName = new ArrayList(ByteCountToCells(MAX_LOCATION_NAME_LENGTH));
+    g_aLocationCreator = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
 }
 
 public void OnMapStart() 
