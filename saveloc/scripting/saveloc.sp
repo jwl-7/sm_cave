@@ -195,7 +195,7 @@ public Action Command_LocMenu(int client, int args)
     return Plugin_Handled;
 }
 
-// ====[ Build Menu ]====
+// ====[ BUILD MENU ]====
 void ShowLocMenu(int client)
 {
     Menu locMenu = new Menu(LocMenuHandler, MENU_ACTIONS_ALL);
@@ -217,7 +217,7 @@ void ShowLocMenu(int client)
     locMenu.DisplayAt(client, firstItem, MENU_TIME_FOREVER);
 }
 
-// ====[ Menu Handler ]====
+// ====[ MENU HANDLER ]====
 public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice) 
 {
     switch(action)

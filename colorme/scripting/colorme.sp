@@ -41,7 +41,7 @@ public Action Command_ColorMe(int client, int args)
     return Plugin_Handled;
 }
 
-// ====[ Build Menu ]====
+// ====[ BUILD MENU ]====
 void ShowColorMenu(int client, int selection)
 {
     Menu colorMenu = new Menu(ColorMenuHandler, MENU_ACTIONS_ALL);
@@ -71,7 +71,7 @@ void ShowColorMenu(int client, int selection)
     colorMenu.DisplayAt(client, selection, MENU_TIME_FOREVER);
 }
 
-// ====[ Menu Handler ]====
+// ====[ MENU HANDLER ]====
 public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice) 
 {
     switch(action)
