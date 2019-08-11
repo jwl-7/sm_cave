@@ -308,6 +308,17 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
 
 void LoadLocation(int client, int id)
 {
+    if (!IsPlayerAlive(client))
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!loadloc");
+        return;
+    }
+    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!loadloc");
+        return;
+    }
+
     float position[3];
     float angles[3];
     float velocity[3];
