@@ -259,6 +259,10 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         {
             g_bIsMenuOpen[client] = false;
         }
+        case MenuAction_End:
+        {
+            delete menu;
+        }
     }
     
     return 0;
