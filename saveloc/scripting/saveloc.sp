@@ -23,7 +23,7 @@ public Plugin myinfo =
     author      = "JWL",
     description = "Save/Load Locations",
     version     = "1.0",
-    url         = "https://www.sourcemod.net/"
+    url         = "https://github.com/jwl-7/sm_cave"
 };
 
 // ====[ EVENTS ]====
