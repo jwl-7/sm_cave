@@ -190,13 +190,13 @@ public Action Command_LocMenu(int client, int args)
         return Plugin_Handled;
     }
 
-    showLocMenu(client);
+    ShowLocMenu(client);
 
     return Plugin_Handled;
 }
 
 // ====[ Build Menu ]====
-void showLocMenu(int client)
+void ShowLocMenu(int client)
 {
     Menu locMenu = new Menu(LocMenuHandler, MENU_ACTIONS_ALL);
     locMenu.SetTitle("Locations");
@@ -289,7 +289,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     {
         if (g_bIsMenuOpen[i])
         {
-            showLocMenu(i);
+            ShowLocMenu(i);
         }
     }
 }
@@ -308,7 +308,7 @@ void LoadLocation(int client, int id)
         g_iMostRecentLocation[client] = id;
         if (g_bIsMenuOpen[client]) // refresh menu
         {
-            showLocMenu(client);
+            ShowLocMenu(client);
         }
     }
 
@@ -345,7 +345,7 @@ void NameLocation(int client, char[] name)
     {
         if (g_bIsMenuOpen[i])
         {
-            showLocMenu(i);
+            ShowLocMenu(i);
         }
     }
 }
