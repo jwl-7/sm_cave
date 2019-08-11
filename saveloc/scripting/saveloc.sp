@@ -253,11 +253,14 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
             int id = StringToInt(loc);
             LoadLocation(client, id);
-            menu.DisplayAt(client, menu.Selection, MENU_TIME_FOREVER);
         }
         case MenuAction_Cancel:
         {
             g_bIsMenuOpen[client] = false;
+        }
+        case MenuAction_End:
+        {
+            delete menu;
         }
     }
     
@@ -284,7 +287,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
 
     CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Saved {lime}#%i", g_iMostRecentLocation[client]);
 
-    // refresh menu
+    // refresh all menus
     for (int i = 1; i <= MaxClients; i++)
     {
         if (g_bIsMenuOpen[i])
@@ -303,15 +306,7 @@ void LoadLocation(int client, int id)
     char creator[MAX_NAME_LENGTH];
     char clientName[MAX_NAME_LENGTH];
 
-    if (g_iMostRecentLocation[client] != id)
-    {
-        g_iMostRecentLocation[client] = id;
-        if (g_bIsMenuOpen[client]) // refresh menu
-        {
-            ShowLocMenu(client);
-        }
-    }
-
+    g_iMostRecentLocation[client] = id;
     g_aPosition.GetArray(id, position, sizeof(position));
     g_aAngles.GetArray(id, angles, sizeof(angles));
     g_aVelocity.GetArray(id, velocity, sizeof(velocity));
@@ -319,6 +314,12 @@ void LoadLocation(int client, int id)
     g_aLocationCreator.GetString(id, creator, sizeof(creator));
     GetClientName(client, clientName, sizeof(clientName));
     TeleportEntity(client, position, angles, velocity);
+
+    // refresh menu
+    if (g_bIsMenuOpen[client])
+    {
+        ShowLocMenu(client);
+    }
 
     if (StrEqual(clientName, creator))
     {
