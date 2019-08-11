@@ -23,7 +23,7 @@ public Plugin myinfo =
     author      = "JWL",
     description = "Save/Load Locations",
     version     = "1.0",
-    url         = ""
+    url         = "https://www.sourcemod.net/"
 };
 
 // ====[ EVENTS ]====
@@ -226,6 +226,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         {
             g_bIsMenuOpen[client] = true;
         }
+
         case MenuAction_DisplayItem:
         {
             char loc[MAX_LOCATION_NAME_LENGTH];
@@ -245,6 +246,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
             return RedrawMenuItem(loc);
         }
+
         case MenuAction_Select:
         {
             char loc[MAX_LOCATION_NAME_LENGTH];
@@ -254,10 +256,12 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
             int id = StringToInt(loc);
             LoadLocation(client, id);
         }
+
         case MenuAction_Cancel:
         {
             g_bIsMenuOpen[client] = false;
         }
+
         case MenuAction_End:
         {
             delete menu;
