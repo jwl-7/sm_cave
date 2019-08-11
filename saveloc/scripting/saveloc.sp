@@ -29,16 +29,8 @@ public Plugin myinfo =
 // ====[ EVENTS ]====
 public void OnPluginStart()
 {
-    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc");
-    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location. Usage: !loadloc <#id OR name>");
-    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Show locations in menu. Usage: !locmenu");
-    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <name>");
-
-    g_aPosition = new ArrayList(3);
-    g_aAngles = new ArrayList(3);
-    g_aVelocity = new ArrayList(3);
-    g_aLocationName = new ArrayList(ByteCountToCells(MAX_LOCATION_NAME_LENGTH));
-    g_aLocationCreator = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
+    RegisterCommands();
+    CreateArrays();
 }
 
 public void OnMapStart() 
@@ -47,6 +39,14 @@ public void OnMapStart()
 }
 
 // ====[ COMMANDS ]====
+void RegisterCommands()
+{
+    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc");
+    RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location. Usage: !loadloc <#id OR name>");
+    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Show locations in menu. Usage: !locmenu");
+    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <name>");
+}
+
 public Action Command_SaveLoc(int client, int args)
 {
     if (!client) 
@@ -84,7 +84,7 @@ public Action Command_LoadLoc(int client, int args)
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found");
         return Plugin_Handled;
     }
 
@@ -102,7 +102,7 @@ public Action Command_LoadLoc(int client, int args)
             int id = StringToInt(arg[1]);
             if (id < 0 || id > g_aPosition.Length - 1)
             {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Invalid location.");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location not found");
                 return Plugin_Handled;
             }
             else
@@ -114,7 +114,7 @@ public Action Command_LoadLoc(int client, int args)
         {
             if (g_aLocationName.FindString(arg) == -1)
             {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations with that name found.");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location not found");
                 return Plugin_Handled;
             }
             else
@@ -143,7 +143,7 @@ public Action Command_NameLoc(int client, int args)
     GetClientName(client, clientName, sizeof(clientName));
     if (!StrEqual(clientName, creator)) // check if client is creator of location
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be the creator of the location to use {purple}!nameloc");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You can only name locations that you have created");
     }
 
     if (args == 0)
@@ -157,12 +157,12 @@ public Action Command_NameLoc(int client, int args)
         GetCmdArg(1, name, sizeof(name));
         if (name[0] == '#') // check if location resembles <#id>
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name must not start with {yellow}#");
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name cannot start with {yellow}#");
             return Plugin_Handled;
         }
         else if (g_aLocationName.FindString(name) != -1) // check for unique location name
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name already taken.");
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name already taken");
         }
         else // set the location name
         {
@@ -184,9 +184,14 @@ public Action Command_LocMenu(int client, int args)
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!locmenu");
         return Plugin_Handled;
     }
+    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+    {
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must join a team to use {purple}!locmenu");
+        return Plugin_Handled;
+    }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}No saved locations found");
         return Plugin_Handled;
     }
 
@@ -277,7 +282,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     if (g_aPosition.Length == MAX_LOCATIONS)
     {
         ClearLocations();
-        CPrintToChatAll("[{green}SaveLoc{default}] {grey}Max saved locations reached! Resetting.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Max saved locations reached, resetting!");
     }
 
     char creator[MAX_NAME_LENGTH];
@@ -331,11 +336,11 @@ void LoadLocation(int client, int id)
     }
     else if (StrEqual(name, ""))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {grey}| Created by {yellow}%s", g_iMostRecentLocation[client], creator);
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {grey} | Created by {yellow}%s", g_iMostRecentLocation[client], creator);
     }
     else if (!StrEqual(name, ""))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {grey}| Created by {yellow}%s", g_iMostRecentLocation[client], name, creator);
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {grey} | Created by {yellow}%s", g_iMostRecentLocation[client], name, creator);
     }
 }
 
@@ -353,6 +358,15 @@ void NameLocation(int client, char[] name)
             ShowLocMenu(i);
         }
     }
+}
+
+void CreateArrays()
+{
+    g_aPosition = new ArrayList(3);
+    g_aAngles = new ArrayList(3);
+    g_aVelocity = new ArrayList(3);
+    g_aLocationName = new ArrayList(ByteCountToCells(MAX_LOCATION_NAME_LENGTH));
+    g_aLocationCreator = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
 }
 
 void ClearLocations()
