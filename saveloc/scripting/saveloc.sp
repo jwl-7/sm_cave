@@ -253,7 +253,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
             int id = StringToInt(loc);
             LoadLocation(client, id);
-            menu.DisplayAt(client, GetMenuSelectionPosition(), MENU_TIME_FOREVER);
+            menu.DisplayAt(client, menu.Selection, MENU_TIME_FOREVER);
         }
         case MenuAction_Cancel:
         {
