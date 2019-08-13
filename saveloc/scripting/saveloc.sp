@@ -104,7 +104,6 @@ public Action Command_LoadLoc(int client, int args)
             if (id < 0 || id > g_aPosition.Length - 1)
             {
                 CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location not found");
-                return Plugin_Handled;
             }
             else
             {
@@ -116,7 +115,6 @@ public Action Command_LoadLoc(int client, int args)
             if (g_aLocationName.FindString(arg) == -1)
             {
                 CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location not found");
-                return Plugin_Handled;
             }
             else
             {
@@ -150,7 +148,6 @@ public Action Command_NameLoc(int client, int args)
     if (args == 0)
     {
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Usage: {purple}!nameloc <name>");
-        return Plugin_Handled;
     }
     else
     {
@@ -159,7 +156,6 @@ public Action Command_NameLoc(int client, int args)
         if (name[0] == '#') // check if location resembles <#id>
         {
             CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Location name cannot start with {yellow}#");
-            return Plugin_Handled;
         }
         else if (g_aLocationName.FindString(name) != -1) // check for unique location name
         {
@@ -363,7 +359,7 @@ void NameLocation(int client, char[] name)
 {
     int id = g_iMostRecentLocation[client];
     g_aLocationName.SetString(id, name);
-    
+
     CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Named {lime}#%i {yellow}%s", id, name);
 
     // refresh menu
