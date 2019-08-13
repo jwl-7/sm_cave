@@ -6,7 +6,6 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#define MAX_LOCATIONS 1024
 #define MAX_LOCATION_NAME_LENGTH 32
 
 static ArrayList g_aPosition;
@@ -33,7 +32,7 @@ public void OnPluginStart()
     CreateArrays();
 }
 
-public void OnMapStart() 
+public void OnMapStart()
 {
     ClearLocations();
 }
@@ -156,7 +155,7 @@ public Action Command_NameLoc(int client, int args)
         GetCmdArg(1, name, sizeof(name));
         if (name[0] == '#') // check if location resembles <#id>
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name can't start with {lime}'#'{lightred}.");
+            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name can't start with '#'.");
         }
         else if (g_aLocationName.FindString(name) != -1) // check for unique location name
         {
@@ -280,12 +279,6 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 // ====[ SAVE LOCATION ]====
 void SaveLocation(int client, float position[3], float angles[3], float velocity[3])
 {
-    if (g_aPosition.Length == MAX_LOCATIONS)
-    {
-        ClearLocations();
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Max saved locations reached! Resetting.");
-    }
-
     char creator[MAX_NAME_LENGTH];
     GetClientName(client, creator, sizeof(creator));
     
@@ -351,11 +344,11 @@ void LoadLocation(int client, int id)
     }
     else if (StrEqual(name, ""))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {grey} | Created by {lime}%s", g_iMostRecentLocation[client], creator);
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], creator);
     }
     else if (!StrEqual(name, ""))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {grey} | Created by {lime}%s", g_iMostRecentLocation[client], name, creator);
+        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], name, creator);
     }
 }
 
