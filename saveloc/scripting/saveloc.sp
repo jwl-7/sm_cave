@@ -75,17 +75,17 @@ public Action Command_LoadLoc(int client, int args)
 
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use {purple}!loadloc");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return Plugin_Handled;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must join a team to use {purple}!loadloc");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}No saved locations found");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}No saved locations found.");
         return Plugin_Handled;
     }
 
@@ -104,7 +104,7 @@ public Action Command_LoadLoc(int client, int args)
             int id = StringToInt(arg[1]);
             if (id < 0 || id > g_aPosition.Length - 1) // location does not exist
             {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location not found");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location not found.");
             }
             else
             {
@@ -115,7 +115,7 @@ public Action Command_LoadLoc(int client, int args)
         {
             if (g_aLocationName.FindString(arg) == -1) // location does not exist
             {
-                CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location not found");
+                CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location not found.");
             }
             else
             {
@@ -143,7 +143,7 @@ public Action Command_NameLoc(int client, int args)
     GetClientName(client, clientName, sizeof(clientName));
     if (!StrEqual(clientName, creator)) // check if client created the location
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be the creator to name a location");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You can't name another player's location.");
     }
 
     if (args == 0)
@@ -156,11 +156,11 @@ public Action Command_NameLoc(int client, int args)
         GetCmdArg(1, name, sizeof(name));
         if (name[0] == '#') // check if location resembles <#id>
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name can't start with {lime}#");
+            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name can't start with {lime}'#'{lightred}.");
         }
         else if (g_aLocationName.FindString(name) != -1) // check for unique location name
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name already taken");
+            CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Location name already taken.");
         }
         else // set the location name
         {
@@ -179,17 +179,17 @@ public Action Command_LocMenu(int client, int args)
     }
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use {purple}!locmenu");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return Plugin_Handled;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must join a team to use {purple}!locmenu");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}No saved locations found");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}No saved locations found.");
         return Plugin_Handled;
     }
 
@@ -283,7 +283,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     if (g_aPosition.Length == MAX_LOCATIONS)
     {
         ClearLocations();
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Max saved locations reached, resetting!");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}Max saved locations reached! Resetting.");
     }
 
     char creator[MAX_NAME_LENGTH];
@@ -313,12 +313,12 @@ void LoadLocation(int client, int id)
 {
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use {purple}!loadloc");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must join a team to use {purple}!loadloc");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
         return;
     }
 
