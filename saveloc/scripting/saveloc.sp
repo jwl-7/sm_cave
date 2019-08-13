@@ -91,10 +91,11 @@ public Action Command_LoadLoc(int client, int args)
 
     if (args == 0)
     {
+        // if no arguments, load the client's most recent location
         int id = g_iMostRecentLocation[client];
         LoadLocation(client, id);
     }
-    else
+    else // check the argument for <#id OR name>
     {
         char arg[MAX_LOCATION_NAME_LENGTH];
         GetCmdArg(1, arg, sizeof(arg));
@@ -140,7 +141,7 @@ public Action Command_NameLoc(int client, int args)
 
     g_aLocationCreator.GetString(id, creator, sizeof(creator));
     GetClientName(client, clientName, sizeof(clientName));
-    if (!StrEqual(clientName, creator)) // check if client is creator of location
+    if (!StrEqual(clientName, creator)) // check if client created the location
     {
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You can only name locations that you have created");
     }
@@ -203,6 +204,7 @@ void ShowLocMenu(int client)
     Menu locMenu = new Menu(LocMenuHandler, MENU_ACTIONS_ALL);
     locMenu.SetTitle("Locations");
 
+    // fill the menu with all saved locations
     for (int i = 0; i < g_aPosition.Length; i++)
     {
         char loc[MAX_LOCATION_NAME_LENGTH];
@@ -210,6 +212,7 @@ void ShowLocMenu(int client)
         locMenu.AddItem(loc, loc);
     }
 
+    // make sure the menu displays at the client's most recent location
     int firstItem;
     if (g_iMostRecentLocation[client] > 5)
     {
@@ -274,7 +277,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
     return 0;
 }
 
-// ====[ LOCAL FUNCTIONS ]====
+// ====[ SAVE LOCATION ]====
 void SaveLocation(int client, float position[3], float angles[3], float velocity[3])
 {
     if (g_aPosition.Length == MAX_LOCATIONS)
@@ -305,6 +308,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     }
 }
 
+// =====[ LOAD LOCATION ]=====
 void LoadLocation(int client, int id)
 {
     if (!IsPlayerAlive(client))
@@ -355,6 +359,7 @@ void LoadLocation(int client, int id)
     }
 }
 
+// =====[ NAME LOCATION ]=====
 void NameLocation(int client, char[] name)
 {
     int id = g_iMostRecentLocation[client];
@@ -372,6 +377,7 @@ void NameLocation(int client, char[] name)
     }
 }
 
+// =====[ HELPER FUNCTIONS ]=====
 void CreateArrays()
 {
     g_aPosition = new ArrayList(3);
