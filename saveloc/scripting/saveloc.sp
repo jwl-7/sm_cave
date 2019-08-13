@@ -72,6 +72,7 @@ public Action Command_LoadLoc(int client, int args)
     {
         return Plugin_Handled;
     }
+
     if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "[{green}SaveLoc{default}] {grey}You must be alive to use {purple}!loadloc");
@@ -225,7 +226,7 @@ void ShowLocMenu(int client)
 // ====[ MENU HANDLER ]====
 public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice) 
 {
-    switch(action)
+    switch (action)
     {
         case MenuAction_Display:
         {
@@ -236,6 +237,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
         {
             char loc[MAX_LOCATION_NAME_LENGTH];
             menu.GetItem(choice, loc, sizeof(loc));
+
             int id = StringToInt(loc);
             char name[MAX_LOCATION_NAME_LENGTH];
             g_aLocationName.GetString(id, name, sizeof(name));
@@ -287,6 +289,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
 
     char creator[MAX_NAME_LENGTH];
     GetClientName(client, creator, sizeof(creator));
+    
     g_iMostRecentLocation[client] = g_aPosition.Length;
     g_aPosition.PushArray(position);
     g_aAngles.PushArray(angles);
@@ -332,6 +335,7 @@ void LoadLocation(int client, int id)
     g_aVelocity.GetArray(id, velocity, sizeof(velocity));
     g_aLocationName.GetString(id, name, sizeof(name));
     g_aLocationCreator.GetString(id, creator, sizeof(creator));
+
     GetClientName(client, clientName, sizeof(clientName));
     TeleportEntity(client, position, angles, velocity);
 
@@ -359,6 +363,7 @@ void NameLocation(int client, char[] name)
 {
     int id = g_iMostRecentLocation[client];
     g_aLocationName.SetString(id, name);
+    
     CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Named {lime}#%i {yellow}%s", id, name);
 
     // refresh menu
