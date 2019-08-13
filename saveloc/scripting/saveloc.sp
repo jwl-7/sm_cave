@@ -322,7 +322,6 @@ void LoadLocation(int client, int id)
     char creator[MAX_NAME_LENGTH];
     char clientName[MAX_NAME_LENGTH];
 
-    g_iMostRecentLocation[client] = id;
     g_aPosition.GetArray(id, position, sizeof(position));
     g_aAngles.GetArray(id, angles, sizeof(angles));
     g_aVelocity.GetArray(id, velocity, sizeof(velocity));
@@ -338,15 +337,15 @@ void LoadLocation(int client, int id)
 
         if (StrEqual(clientName, creator))
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s", g_iMostRecentLocation[client], name);
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s", id, name);
         }
         else if (StrEqual(name, ""))
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], creator);
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", id, creator);
         }
         else if (!StrEqual(name, ""))
         {
-            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], name, creator);
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", id, name, creator);
         }
     }
 
