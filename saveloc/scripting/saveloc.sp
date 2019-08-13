@@ -43,8 +43,8 @@ void RegisterCommands()
 {
     RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc");
     RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location. Usage: !loadloc <#id OR name>");
-    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Show locations in menu. Usage: !locmenu");
-    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <name>");
+    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Open menu with saved locations. Usage: !locmenu");
+    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name most recent location. Usage: !nameloc <name>");
 }
 
 public Action Command_SaveLoc(int client, int args)
