@@ -332,23 +332,28 @@ void LoadLocation(int client, int id)
     GetClientName(client, clientName, sizeof(clientName));
     TeleportEntity(client, position, angles, velocity);
 
+    if (g_iMostRecentLocation[client] != id) // only print chat message if loading new location
+    {
+        g_iMostRecentLocation[client] = id;
+
+        if (StrEqual(clientName, creator))
+        {
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s", g_iMostRecentLocation[client], name);
+        }
+        else if (StrEqual(name, ""))
+        {
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], creator);
+        }
+        else if (!StrEqual(name, ""))
+        {
+            CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], name, creator);
+        }
+    }
+
     // refresh menu
     if (g_bIsMenuOpen[client])
     {
         ShowLocMenu(client);
-    }
-
-    if (StrEqual(clientName, creator))
-    {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s", g_iMostRecentLocation[client], name);
-    }
-    else if (StrEqual(name, ""))
-    {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], creator);
-    }
-    else if (!StrEqual(name, ""))
-    {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", g_iMostRecentLocation[client], name, creator);
     }
 }
 
