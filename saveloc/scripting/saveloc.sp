@@ -61,10 +61,19 @@ public Action Command_SaveLoc(int client, int args)
     }
     else if (args == 1)
     {
-        // save location with <name>
-        char name[MAXLOCATION_NAME];
-        GetCmdArg(1, name, sizeof(name));
-        SaveLocation(client, name);
+        char arg[MAXLOCATION_NAME];
+        GetCmdArg(1, arg, sizeof(arg));
+
+        // check if location <name> resembles <#id>
+        if (arg[0] == '#')
+        {
+            CPrintToChat(client, "%s {lightred}Location name can't start with '#'.", MSG_PREFIX);
+        }
+        else
+        {
+            // save location with <name>
+            SaveLocation(client, arg);
+        }
     }
     else
     {
@@ -349,13 +358,6 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 // ====[ SAVE LOCATION ]====
 void SaveLocation(int client, char[MAXLOCATION_NAME] name)
 {
-    // check if location <name> resembles <#id>
-    if (name[0] == '#')
-    {
-        CPrintToChat(client, "%s {lightred}Location name can't start with '#'.", MSG_PREFIX);
-        return;
-    }
-
     float position[3];
     float angles[3];
     float velocity[3];
@@ -376,7 +378,7 @@ void SaveLocation(int client, char[MAXLOCATION_NAME] name)
 
     CPrintToChat(client, "%s {grey}Saved {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
 
-    // refresh all open menus
+    // refresh all open location menus
     for (int i = 1; i <= MaxClients; i++)
     {
         if (g_bLocationMenuOpen[i])
