@@ -61,6 +61,7 @@ public Action Command_SaveLoc(int client, int args)
     }
     else if (args == 1)
     {
+        // get location <name>
         char arg[MAXLOCATION_NAME];
         GetCmdArg(1, arg, sizeof(arg));
 
@@ -77,8 +78,7 @@ public Action Command_SaveLoc(int client, int args)
     }
     else
     {
-        // print command usage
-        CPrintToChat(client, "%s {grey}Usage: {purple}!saveloc {grey}OR {purple}!saveloc <name>", MSG_PREFIX);
+        CPrintToChat(client, "%s {grey}Usage: {purple}!saveloc <name>", MSG_PREFIX);
     }
 
     return Plugin_Handled;
@@ -90,57 +90,64 @@ public Action Command_LoadLoc(int client, int args)
     {
         return Plugin_Handled;
     }
-
-    if (!IsPlayerAlive(client))
+    else if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "%s {lightred}No saved locations found.");
+        CPrintToChat(client, "%s {lightred}No saved locations found.", MSG_PREFIX);
         return Plugin_Handled;
     }
 
     if (args == 0)
     {
-        // if no arguments, load the client's most recent location
+        // load most recent location
         int id = g_iMostRecentLocation[client];
         LoadLocation(client, id);
     }
-    else // check the argument for <#id OR name>
+    else if (args == 1)
     {
+        // get location <#id OR name>
         char arg[MAXLOCATION_NAME];
         GetCmdArg(1, arg, sizeof(arg));
-        if (arg[0] == '#') // check for location by <#id>
+
+        if (arg[0] == '#')
         {
+            // check location <#id>
             int id = StringToInt(arg[1]);
             if (id < 0 || id > g_aPosition.Length - 1) // location does not exist
             {
-                CPrintToChat(client, "%s {lightred}Location not found.");
+                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
             }
             else
             {
                 LoadLocation(client, id);
             }
         }
-        else // check for location by <name>
+        else
         {
-            if (g_aLocationName.FindString(arg) == -1) // location does not exist
+            // check location <name>
+            int id = g_aLocationName.FindString(arg);
+            if (id == -1) // location does not exist
             {
-                CPrintToChat(client, "%s {lightred}Location not found.");
+                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
             }
             else
             {
-                int id = g_aLocationName.FindString(arg);
                 LoadLocation(client, id);
             }
         }
+    }
+    else
+    {
+        CPrintToChat(client, "%s {grey}Usage: {purple}!loadloc <#id OR name>", MSG_PREFIX);
     }
 
     return Plugin_Handled;
@@ -391,6 +398,7 @@ void SaveLocation(int client, char[MAXLOCATION_NAME] name)
 // =====[ LOAD LOCATION ]=====
 void LoadLocation(int client, int id)
 {
+    /*
     if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
@@ -400,7 +408,7 @@ void LoadLocation(int client, int id)
     {
         CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
         return;
-    }
+    }*/
 
     float position[3];
     float angles[3];
@@ -414,26 +422,33 @@ void LoadLocation(int client, int id)
     g_aVelocity.GetArray(id, velocity, sizeof(velocity));
     g_aLocationName.GetString(id, name, sizeof(name));
     g_aLocationCreator.GetString(id, creator, sizeof(creator));
-
     GetClientName(client, clientName, sizeof(clientName));
+
     TeleportEntity(client, position, angles, velocity);
 
-    // print chat message if loading new location
+    // print message if loading new location
     if (g_iMostRecentLocation[client] != id)
     {
         g_iMostRecentLocation[client] = id;
 
         if (StrEqual(clientName, creator))
         {
-            CPrintToChat(client, "%s {grey}Loaded {lime}#%i {yellow}%s", id, name);
+            CPrintToChat(client, "%s {grey}Loaded {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
         }
-        else if (StrEqual(name, ""))
+        else
         {
-            CPrintToChat(client, "%s {grey}Loaded {lime}#%i {default}| {grey}Created by {lime}%s", id, creator);
-        }
-        else if (!StrEqual(name, ""))
-        {
-            CPrintToChat(client, "%s {grey}Loaded {lime}#%i {yellow}%s {default}| {grey}Created by {lime}%s", id, name, creator);
+            if (StrEqual(name, ""))
+            {
+                CPrintToChat(client, 
+                    "%s {grey}Loaded {yellow}#%i {default}| {grey}Created by {lime}%s", 
+                    MSG_PREFIX, id, creator);
+            }
+            else
+            {
+                CPrintToChat(client, 
+                    "%s {grey}Loaded {yellow}#%i {olive}%s {default}| {grey}Created by {lime}%s", 
+                    MSG_PREFIX, id, name, creator);
+            }
         }
     }
 
