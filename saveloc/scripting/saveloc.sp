@@ -331,7 +331,8 @@ void LoadLocation(int client, int id)
     GetClientName(client, clientName, sizeof(clientName));
     TeleportEntity(client, position, angles, velocity);
 
-    if (g_iMostRecentLocation[client] != id) // only print chat message if loading new location
+    // print chat message if loading new location
+    if (g_iMostRecentLocation[client] != id)
     {
         g_iMostRecentLocation[client] = id;
 
