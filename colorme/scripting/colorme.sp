@@ -27,12 +27,12 @@ public Action Command_ColorMe(int client, int args)
 {
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
     if (IsClientMoving(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use this command.");
+        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use that command.");
         return Plugin_Handled;
     }
 

@@ -74,12 +74,12 @@ public Action Command_LoadLoc(int client, int args)
 
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
@@ -178,12 +178,12 @@ public Action Command_LocMenu(int client, int args)
     }
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
@@ -306,12 +306,12 @@ void LoadLocation(int client, int id)
 {
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use this command.");
+        CPrintToChat(client, "[{green}SaveLoc{default}] {lightred}You must be alive to use that command.");
         return;
     }
 
