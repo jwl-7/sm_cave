@@ -27,12 +27,12 @@ public Action Command_ColorMe(int client, int args)
 {
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use {purple}!colorme");
+        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use this command.");
         return Plugin_Handled;
     }
     if (IsClientMoving(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use {purple}!colorme");
+        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use this command.");
         return Plugin_Handled;
     }
 
@@ -112,7 +112,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
     return 0;
 }
 
-// ====[ LOCAL FUNCTIONS ]====
+// ====[ THIRD-PERSON MIRROR VIEW ]====
 void SetModelView(int client, bool view)
 {
     if (!IsPlayerAlive(client))
@@ -145,7 +145,8 @@ void SetModelView(int client, bool view)
     }
 }
 
-bool IsClientMoving(int client)
+// ====[ HELPER FUNCTIONS]====
+stock bool IsClientMoving(int client)
 {
     float buffer[3];
     GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", buffer);
