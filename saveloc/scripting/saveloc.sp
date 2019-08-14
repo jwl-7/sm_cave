@@ -13,7 +13,7 @@ static ArrayList g_aAngles;
 static ArrayList g_aVelocity;
 static ArrayList g_aLocationName;
 static ArrayList g_aLocationCreator;
-static bool g_bIsMenuOpen[MAXPLAYERS+1];
+static bool g_bIsLocationMenuOpen[MAXPLAYERS+1];
 static int g_iMostRecentLocation[MAXPLAYERS+1];
 
 public Plugin myinfo =
@@ -228,7 +228,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
     {
         case MenuAction_Display:
         {
-            g_bIsMenuOpen[client] = true;
+            g_bIsLocationMenuOpen[client] = true;
         }
 
         case MenuAction_DisplayItem:
@@ -264,7 +264,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
         case MenuAction_Cancel:
         {
-            g_bIsMenuOpen[client] = false;
+            g_bIsLocationMenuOpen[client] = false;
         }
 
         case MenuAction_End:
@@ -294,7 +294,7 @@ void SaveLocation(int client, float position[3], float angles[3], float velocity
     // refresh all menus
     for (int i = 1; i <= MaxClients; i++)
     {
-        if (g_bIsMenuOpen[i])
+        if (g_bIsLocationMenuOpen[i])
         {
             ShowLocMenu(i);
         }
@@ -351,7 +351,7 @@ void LoadLocation(int client, int id)
     }
 
     // refresh menu
-    if (g_bIsMenuOpen[client])
+    if (g_bIsLocationMenuOpen[client])
     {
         ShowLocMenu(client);
     }
@@ -368,7 +368,7 @@ void NameLocation(int client, char[] name)
     // refresh menu
     for (int i = 1; i <= MaxClients; i++)
     {
-        if (g_bIsMenuOpen[i])
+        if (g_bIsLocationMenuOpen[i])
         {
             ShowLocMenu(i);
         }
@@ -396,6 +396,7 @@ void ClearLocations()
     for (int i = 1; i <= MaxClients; i++)
     {
         g_iMostRecentLocation[i] = -1;
+        g_bIsLocationMenuOpen[i] = false;
     }
 }
 
