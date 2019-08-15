@@ -14,7 +14,7 @@ static ArrayList g_aAngles;
 static ArrayList g_aVelocity;
 static ArrayList g_aLocationName;
 static ArrayList g_aLocationCreator;
-static bool g_bLocationMenuOpen[MAXPLAYERS+1];
+static bool g_bLocMenuOpen[MAXPLAYERS+1];
 static int g_iMostRecentLocation[MAXPLAYERS+1];
 
 public Plugin myinfo =
@@ -44,7 +44,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    CloseLocationMenu(client);
+    CloseLocMenu(client);
 }
 
 public void OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast)
@@ -54,7 +54,7 @@ public void OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast)
 
     if (team == CS_TEAM_SPECTATOR)
     {
-        CloseLocationMenu(client);
+        CloseLocMenu(client);
     }
 }
 
@@ -288,7 +288,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
     {
         case MenuAction_Display:
         {
-            g_bLocationMenuOpen[client] = true;
+            g_bLocMenuOpen[client] = true;
         }
 
         case MenuAction_DisplayItem:
@@ -324,7 +324,7 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
         case MenuAction_Cancel:
         {
-            g_bLocationMenuOpen[client] = false;
+            g_bLocMenuOpen[client] = false;
         }
 
         case MenuAction_End:
@@ -359,13 +359,9 @@ void SaveLocation(int client, char[] name)
 
     CPrintToChat(client, "%s {grey}Saved {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
 
-    // refresh all open location menus
     for (int i = 1; i <= MaxClients; i++)
     {
-        if (g_bLocationMenuOpen[i])
-        {
-            ShowLocMenu(i);
-        }
+        RefreshLocMenu(i);
     }
 }
 
@@ -420,11 +416,7 @@ void LoadLocation(int client, int id)
         }
     }
 
-    // refresh menu
-    if (g_bLocationMenuOpen[client])
-    {
-        ShowLocMenu(client);
-    }
+    RefreshLocMenu(client);
 }
 
 // =====[ NAME LOCATION ]=====
@@ -434,13 +426,9 @@ void NameLocation(int client, int id, char[] name)
 
     CPrintToChat(client, "%s {grey}Named {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
 
-    // refresh menu
     for (int i = 1; i <= MaxClients; i++)
     {
-        if (g_bLocationMenuOpen[i])
-        {
-            ShowLocMenu(i);
-        }
+        RefreshLocMenu(i);
     }
 }
 
@@ -465,7 +453,7 @@ void ClearLocations()
     for (int i = 1; i <= MaxClients; i++)
     {
         g_iMostRecentLocation[i] = -1;
-        g_bLocationMenuOpen[i] = false;
+        g_bLocMenuOpen[i] = false;
     }
 }
 
@@ -475,12 +463,20 @@ void HookEvents()
     HookEvent("player_team", OnPlayerJoinTeam);
 }
 
-void CloseLocationMenu(int client)
+void RefreshLocMenu(int client)
 {
-    if (g_bLocationMenuOpen[client])
+    if (g_bLocMenuOpen[client])
+    {
+        ShowLocMenu(client);
+    }
+}
+
+void CloseLocMenu(int client)
+{
+    if (g_bLocMenuOpen[client])
     {
         CancelClientMenu(client, true);
-        g_bLocationMenuOpen[client] = false;
+        g_bLocMenuOpen[client] = false;
     }
 }
 
