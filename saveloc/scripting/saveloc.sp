@@ -7,7 +7,7 @@
 #pragma semicolon 1
 
 #define MAXLOCATION_NAME 32
-#define MSG_PREFIX "%s"
+#define MSG_PREFIX "[{green}Saveloc{default}]"
 
 static ArrayList g_aPosition;
 static ArrayList g_aAngles;
@@ -161,9 +161,6 @@ public Action Command_NameLoc(int client, int args)
         return Plugin_Handled;
     }
 
-    char creator[MAX_NAME_LENGTH];
-    char clientName[MAX_NAME_LENGTH];
-
     if (args == 0)
     {
         CPrintToChat(client, "%s {grey}Usage: {purple}!nameloc <#id> <name>", MSG_PREFIX);
@@ -173,11 +170,11 @@ public Action Command_NameLoc(int client, int args)
         // name most recent location
         char arg[MAXLOCATION_NAME];
         GetCmdArg(1, arg, sizeof(arg));
-        int id = g_iMostRecentLocation[client]
+        int id = g_iMostRecentLocation[client];
 
         if (IsClientLocationCreator(client, id))
         {
-            NameLocation(id, arg);
+            NameLocation(client, id, arg);
         }
         else
         {
@@ -195,9 +192,9 @@ public Action Command_NameLoc(int client, int args)
 
         if (IsValidLocationId(id) && IsClientLocationCreator(client, id))
         {
-            NameLocation(id, arg);
+            NameLocation(client, id, arg2);
         }
-        else if (IsValidLocation(id) && !IsClientLocationCreator(client, id))
+        else if (IsValidLocationId(id) && !IsClientLocationCreator(client, id))
         {
             CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
         }
@@ -280,8 +277,8 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
             char item[MAXLOCATION_NAME];
             menu.GetItem(choice, item, sizeof(item));
 
-            char name[MAXLOCATION_NAME];
             int id = StringToInt(item);
+            char name[MAXLOCATION_NAME];
             g_aLocationName.GetString(id, name, sizeof(name));
 
             if (id == g_iMostRecentLocation[client])
@@ -298,17 +295,12 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 
         case MenuAction_Select:
         {
-            /*
             char item[MAXLOCATION_NAME];
             menu.GetItem(choice, item, sizeof(item));
             ReplaceString(item, sizeof(item), "#", "");
             int id = StringToInt(item);
-            LoadLocation(client, id);
-            */
 
-            char item[MAXLOCATION_NAME];
-            menu.GetItem(choice, item, sizeof(item));
-            Command_LoadLoc(client, item);
+            LoadLocation(client, id);
         }
 
         case MenuAction_Cancel:
@@ -326,20 +318,20 @@ public int LocMenuHandler(Menu menu, MenuAction action, int client, int choice)
 }
 
 // ====[ SAVE LOCATION ]====
-void SaveLocation(int client, char[MAXLOCATION_NAME] name)
+void SaveLocation(int client, char[] name)
 {
     float position[3];
     float angles[3];
     float velocity[3];
     char creator[MAX_NAME_LENGTH];
-    int id;
+    int id = g_aPosition.Length;
 
     GetClientAbsOrigin(client, position);
     GetClientEyeAngles(client, angles);
     GetEntPropVector(client, Prop_Data, "m_vecVelocity", velocity);
     GetClientName(client, creator, sizeof(creator));
     
-    g_iMostRecentLocation[client], id = g_aPosition.Length;
+    g_iMostRecentLocation[client] = id;
     g_aPosition.PushArray(position);
     g_aAngles.PushArray(angles);
     g_aVelocity.PushArray(velocity);
@@ -361,17 +353,16 @@ void SaveLocation(int client, char[MAXLOCATION_NAME] name)
 // =====[ LOAD LOCATION ]=====
 void LoadLocation(int client, int id)
 {
-    /*
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return;
     }
     else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return;
-    }*/
+    }
 
     float position[3];
     float angles[3];
@@ -423,12 +414,11 @@ void LoadLocation(int client, int id)
 }
 
 // =====[ NAME LOCATION ]=====
-void NameLocation(int client, int id, char[MAXLOCATION_NAME] name)
+void NameLocation(int client, int id, char[] name)
 {
-    int id = g_iMostRecentLocation[client];
     g_aLocationName.SetString(id, name);
 
-    CPrintToChat(client, "%s {grey}Named {lime}#%i {yellow}%s", id, name);
+    CPrintToChat(client, "%s {grey}Named {lime}#%i {yellow}%s", MSG_PREFIX, id, name);
 
     // refresh menu
     for (int i = 1; i <= MaxClients; i++)
@@ -467,10 +457,10 @@ void ClearLocations()
 
 bool IsValidLocationId(int id)
 {
-    return !id < 0 && !id > g_aPosition.Length - 1;
+    return !(id < 0) && !(id > g_aPosition.Length - 1);
 }
 
-bool IsValidLocationName(char[MAXLOCATION_NAME] name)
+bool IsValidLocationName(char[] name)
 {
     // check if location name resembles <#id> and is unique
     return name[0] != '#' && g_aLocationName.FindString(name) == -1;
@@ -484,7 +474,7 @@ bool IsClientLocationCreator(int client, int id)
     GetClientName(client, clientName, sizeof(clientName));
     g_aLocationCreator.GetString(id, creator, sizeof(creator));
 
-    return StrEqual(client, creator);
+    return StrEqual(clientName, creator);
 }
 
 stock bool IsValidClient(int client)
