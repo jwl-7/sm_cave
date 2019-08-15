@@ -124,11 +124,11 @@ public Action Command_LoadLoc(int client, int args)
 
             if (IsValidLocationId(id))
             {
-                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
+                LoadLocation(client, id);
             }
             else
             {
-                LoadLocation(client, id);
+                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
             }
         }
         else
