@@ -1,5 +1,4 @@
 #include <sourcemod>
-#include <cstrike>
 #include <multicolors>
 
 #define HIDE_CROSSHAIR 1 << 8
@@ -131,6 +130,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
             int g = StringToInt(rgb[1]);
             int b = StringToInt(rgb[2]);
             SetEntityRenderColor(client, r, g, b);
+
             CPrintToChat(client, "[{green}ColorMe{default}] {grey}Player model set to {lime}%s", colorName);
 
             ShowColorMenu(client, menu.Selection);
