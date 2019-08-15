@@ -16,12 +16,12 @@ This plugin allows the player to save/load locations, which preserve position/an
 ## Usage Guide
 * ```sm_saveloc```
     * ```!saveloc``` - Saves location with an <#id>
-    * ```!saveloc <name>``` - Saves location with an <#id> and specified <name>
-        * location <name> must start with a letter and be unique
+    * ```!saveloc <name>``` - Saves location with an <#id> and specified &lt;name&gt;
+        * location &lt;name&gt; must start with a letter and be unique
 * ```sm_loadloc```
     * ```!loadloc``` - Loads most recent location
     * ```!loadloc <#id>``` - Loads location by <#id>
-    * ```!loadloc <name>``` - Loads location by <name>
+    * ```!loadloc <name>``` - Loads location by &lt;name&gt;
 * ```sm_locmenu```
     * ```!locmenu``` - Opens location menu
         * menu shows all saved locations created by every player
@@ -31,4 +31,4 @@ This plugin allows the player to save/load locations, which preserve position/an
     * ```!nameloc <name>``` - Names most recent location
     * ```!nameloc <#id> <name>``` - Names specified location
         * players can't name each other's locations
-        * location <name> must start with a letter and be unique
+        * location &lt;name&gt; must start with a letter and be unique
