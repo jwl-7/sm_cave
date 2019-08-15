@@ -3,6 +3,7 @@
 
 #define HIDE_CROSSHAIR 1 << 8
 #define HIDE_RADAR 1 << 12
+#define MSG_PREFIX "[{green}ColorMe{default}]"
 
 Handle mp_forcecamera;
 
@@ -61,12 +62,12 @@ public Action Command_ColorMe(int client, int args)
     }
     else if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (IsClientMoving(client))
     {
-        CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use that command.");
+        CPrintToChat(client, "%s {lightred}You must be standing still to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
 
@@ -131,7 +132,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
             int b = StringToInt(rgb[2]);
             SetEntityRenderColor(client, r, g, b);
 
-            CPrintToChat(client, "[{green}ColorMe{default}] {grey}Player model set to {lime}%s", colorName);
+            CPrintToChat(client, "%s {grey}Player model set to {lightblue}%s", MSG_PREFIX, colorName);
 
             ShowColorMenu(client, menu.Selection);
         }
