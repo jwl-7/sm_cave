@@ -200,7 +200,7 @@ public Action Command_NameLoc(int client, int args)
         char arg2[MAXLOCATION_NAME];
         GetCmdArg(1, arg1, sizeof(arg1));
         GetCmdArg(2, arg2, sizeof(arg2));
-        int id = g_aLocationName.FindString(arg1); 
+        int id = StringToInt(arg1[1]);
 
         if (IsValidLocationId(id))
         {
