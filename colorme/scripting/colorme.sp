@@ -1,10 +1,13 @@
 #include <sourcemod>
+#include <cstrike>
 #include <multicolors>
 
 #define HIDE_CROSSHAIR 1 << 8
 #define HIDE_RADAR 1 << 12
 
 Handle mp_forcecamera;
+
+static bool g_bColorMenuOpen[MAXPLAYERS+1];
 
 public Plugin myinfo = 
 { 
@@ -19,7 +22,26 @@ public Plugin myinfo =
 public OnPluginStart() 
 {
     RegConsoleCmd("sm_colorme", Command_ColorMe, "Open menu to change color of player model. Usage: !colorme");
+
     mp_forcecamera = FindConVar("mp_forcecamera");
+    AddCommandListener(Listener_JoinTeam, "jointeam");
+
+}
+
+// ====[ CLIENT EVENTS ]====
+public Action Listener_JoinTeam(int client, const char[] command, int argc)
+{
+    if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+    {
+        if (g_bColorMenuOpen[client])
+        {
+            CancelClientMenu(client, true);
+            SetModelView(client, false);
+            g_bColorMenuOpen[client] = false;
+        }
+    }
+
+    return Plugin_Handled;
 }
 
 // ====[ COMMANDS ]====
@@ -78,6 +100,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
     {
         case MenuAction_Display:
         {
+            g_bColorMenuOpen[client] = true;
             SetModelView(client, true);
         }
 
@@ -100,6 +123,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
 
         case MenuAction_Cancel:
         {
+            g_bColorMenuOpen[client] = false;
             SetModelView(client, false);
         }
 
