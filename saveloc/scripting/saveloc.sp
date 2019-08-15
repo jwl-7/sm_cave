@@ -21,7 +21,7 @@ public Plugin myinfo =
 {
     name        = "SaveLoc",
     author      = "JWL",
-    description = "Save/Load Locations",
+    description = "Allows players to save/load locations that preserve position, angles, and velocity",
     version     = "1.0",
     url         = "https://github.com/jwl-7/sm_cave"
 };
