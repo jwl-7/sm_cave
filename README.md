@@ -4,8 +4,8 @@ various SourceMod plugins for CS:GO
 <img src="https://i.imgur.com/KgsyLdb.png" width="300" height="300">
 
 ## Plugins List
-* [SaveLoc](./saveloc) - sm_saveloc/sm_loadloc | save/load locations, preserving position/angle/velocity
-* [Color Me](./colorme) - sm_colorme | change color of player model with menu and third-person mirror perspective
+* [SaveLoc](./saveloc) - Allows the player to save/load locations, which preserve position/angle/velocity.
+* [Color Me](./colorme) - Allows the player to change the color of their player model.
 
 ## Requirements
 * SourceMod 1.9.0
