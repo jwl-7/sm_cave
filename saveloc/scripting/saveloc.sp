@@ -31,7 +31,7 @@ public void OnPluginStart()
 {
     RegisterCommands();
     CreateArrays();
-    AddCommandListener(Listener_JoinTeam, "jointeam");
+    HookEvents();
 }
 
 public void OnMapStart()
@@ -40,27 +40,31 @@ public void OnMapStart()
 }
 
 // ====[ CLIENT EVENTS ]====
-public Action Listener_JoinTeam(int client, const char[] command, int argc)
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-    if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        if (g_bLocationMenuOpen[client])
-        {
-            CancelClientMenu(client, true);
-            g_bLocationMenuOpen[client] = false;
-        }
-    }
+    int client = GetClientOfUserId(event.GetInt("userid"));
 
-    return Plugin_Handled;
+    CloseLocationMenu(client);
+}
+
+public void OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast)
+{
+    int client = GetClientOfUserId(event.GetInt("userid"));
+    int team = event.GetInt("team");
+
+    if (team == CS_TEAM_SPECTATOR)
+    {
+        CloseLocationMenu(client);
+    }
 }
 
 // ====[ COMMANDS ]====
 void RegisterCommands()
 {
-    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc");
+    RegConsoleCmd("sm_saveloc", Command_SaveLoc, "Save location. Usage: !saveloc <name>");
     RegConsoleCmd("sm_loadloc", Command_LoadLoc, "Load location. Usage: !loadloc <#id OR name>");
-    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Open menu with saved locations. Usage: !locmenu");
-    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name most recent location. Usage: !nameloc <name>");
+    RegConsoleCmd("sm_locmenu", Command_LocMenu, "Open location menu. Usage: !locmenu");
+    RegConsoleCmd("sm_nameloc", Command_NameLoc, "Name location. Usage: !nameloc <#id> <name>");
 }
 
 public Action Command_SaveLoc(int client, int args)
@@ -462,6 +466,21 @@ void ClearLocations()
     {
         g_iMostRecentLocation[i] = -1;
         g_bLocationMenuOpen[i] = false;
+    }
+}
+
+void HookEvents()
+{
+    HookEvent("player_death", OnPlayerDeath);
+    HookEvent("player_team", OnPlayerJoinTeam);
+}
+
+void CloseLocationMenu(int client)
+{
+    if (g_bLocationMenuOpen[client])
+    {
+        CancelClientMenu(client, true);
+        g_bLocationMenuOpen[client] = false;
     }
 }
 
