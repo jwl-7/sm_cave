@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <cstrike>
 #include <multicolors>
 
 #pragma newdecls required
@@ -30,11 +31,27 @@ public void OnPluginStart()
 {
     RegisterCommands();
     CreateArrays();
+    AddCommandListener(Listener_JoinTeam, "jointeam");
 }
 
 public void OnMapStart()
 {
     ClearLocations();
+}
+
+// ====[ CLIENT EVENTS ]====
+public Action Listener_JoinTeam(int client, const char[] command, int argc)
+{
+    if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+    {
+        if (g_bLocationMenuOpen[client])
+        {
+            CancelClientMenu(client, true);
+            g_bLocationMenuOpen[client] = false;
+        }
+    }
+
+    return Plugin_Handled;
 }
 
 // ====[ COMMANDS ]====
@@ -183,9 +200,9 @@ public Action Command_NameLoc(int client, int args)
         if (IsValidLocationId(id))
         {
 
-            if (IsValidLocationName(arg) && IsClientLocationCreator(client, id))
+            if (IsValidLocationName(arg2) && IsClientLocationCreator(client, id))
             {
-                NameLocation(client, id, arg);
+                NameLocation(client, id, arg2);
             }
             else if (!IsClientLocationCreator(client, id))
             {
@@ -467,5 +484,5 @@ bool IsClientLocationCreator(int client, int id)
 
 stock bool IsValidClient(int client)
 {
-	return client >= 1 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client);
+    return client >= 1 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client);
 }
