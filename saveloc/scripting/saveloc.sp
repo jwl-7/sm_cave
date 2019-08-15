@@ -1,6 +1,5 @@
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 #include <multicolors>
 
 #pragma newdecls required
@@ -49,7 +48,7 @@ void RegisterCommands()
 
 public Action Command_SaveLoc(int client, int args)
 {
-    if (!IsValidClient) 
+    if (!IsValidClient(client)) 
     {
         return Plugin_Handled;
     }
@@ -72,7 +71,7 @@ public Action Command_SaveLoc(int client, int args)
         }
         else
         {
-            CPrintToChat(client, "%s {lightred}Location name can't start with '#' and must be unique.", MSG_PREFIX);
+            CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
         }
     }
     else
@@ -85,18 +84,13 @@ public Action Command_SaveLoc(int client, int args)
 
 public Action Command_LoadLoc(int client, int args)
 {
-    if (!IsValidClient) 
+    if (!IsValidClient(client)) 
     {
         return Plugin_Handled;
     }
     else if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
-        return Plugin_Handled;
-    }
-    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        CPrintToChat(client, "%s {lightred}You must join a team use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
@@ -116,34 +110,26 @@ public Action Command_LoadLoc(int client, int args)
         // get location <#id OR name>
         char arg[MAXLOCATION_NAME];
         GetCmdArg(1, arg, sizeof(arg));
+        int id;
 
         if (arg[0] == '#')
         {
             // load location <#id>
-            int id = StringToInt(arg[1]);
-
-            if (IsValidLocationId(id))
-            {
-                LoadLocation(client, id);
-            }
-            else
-            {
-                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
-            }
+            id = StringToInt(arg[1]);
         }
         else
         {
             // load location <name>
-            int id = g_aLocationName.FindString(arg);
+            id = g_aLocationName.FindString(arg);
+        }
 
-            if (IsValidLocationId(id))
-            {
-                LoadLocation(client, id);
-            }
-            else
-            {
-                CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
-            }
+        if (IsValidLocationId(id))
+        {
+            LoadLocation(client, id);
+        }
+        else
+        {
+            CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
         }
     }
     else
@@ -156,7 +142,7 @@ public Action Command_LoadLoc(int client, int args)
 
 public Action Command_NameLoc(int client, int args)
 {
-    if (!IsValidClient) 
+    if (!IsValidClient(client)) 
     {
         return Plugin_Handled;
     }
@@ -172,13 +158,17 @@ public Action Command_NameLoc(int client, int args)
         GetCmdArg(1, arg, sizeof(arg));
         int id = g_iMostRecentLocation[client];
 
-        if (IsClientLocationCreator(client, id))
+        if (IsValidLocationName(arg) && IsClientLocationCreator(client, id))
         {
             NameLocation(client, id, arg);
         }
-        else
+        else if (!IsClientLocationCreator(client, id))
         {
             CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
+        }
+        else
+        {
+            CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
         }
     }
     else if (args == 2)
@@ -190,13 +180,21 @@ public Action Command_NameLoc(int client, int args)
         GetCmdArg(2, arg2, sizeof(arg2));
         int id = g_aLocationName.FindString(arg1); 
 
-        if (IsValidLocationId(id) && IsClientLocationCreator(client, id))
+        if (IsValidLocationId(id))
         {
-            NameLocation(client, id, arg2);
-        }
-        else if (IsValidLocationId(id) && !IsClientLocationCreator(client, id))
-        {
-            CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
+
+            if (IsValidLocationName(arg) && IsClientLocationCreator(client, id))
+            {
+                NameLocation(client, id, arg);
+            }
+            else if (!IsClientLocationCreator(client, id))
+            {
+                CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
+            }
+            else
+            {
+                CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
+            }
         }
         else
         {
@@ -213,18 +211,13 @@ public Action Command_NameLoc(int client, int args)
 
 public Action Command_LocMenu(int client, int args)
 {
-    if (!IsValidClient) 
+    if (!IsValidClient(client)) 
     {
         return Plugin_Handled;
     }
-    if (!IsPlayerAlive(client))
+    else if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
-        return Plugin_Handled;
-    }
-    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        CPrintToChat(client, "%s {lightred}You must join a team to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
@@ -358,11 +351,6 @@ void LoadLocation(int client, int id)
         CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
         return;
     }
-    else if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
-        return;
-    }
 
     float position[3];
     float angles[3];
@@ -418,7 +406,7 @@ void NameLocation(int client, int id, char[] name)
 {
     g_aLocationName.SetString(id, name);
 
-    CPrintToChat(client, "%s {grey}Named {lime}#%i {yellow}%s", MSG_PREFIX, id, name);
+    CPrintToChat(client, "%s {grey}Named {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
 
     // refresh menu
     for (int i = 1; i <= MaxClients; i++)
@@ -462,8 +450,8 @@ bool IsValidLocationId(int id)
 
 bool IsValidLocationName(char[] name)
 {
-    // check if location name resembles <#id> and is unique
-    return name[0] != '#' && g_aLocationName.FindString(name) == -1;
+    // check if location name starts with letter and is unique
+    return IsCharAlpha(name[0]) && g_aLocationName.FindString(name) == -1;
 }
 
 bool IsClientLocationCreator(int client, int id)
