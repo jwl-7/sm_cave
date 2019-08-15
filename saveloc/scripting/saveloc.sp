@@ -163,6 +163,11 @@ public Action Command_NameLoc(int client, int args)
     {
         return Plugin_Handled;
     }
+    else if (g_aPosition.Length == 0)
+    {
+        CPrintToChat(client, "%s {lightred}No saved locations found.", MSG_PREFIX);
+        return Plugin_Handled;
+    }
 
     if (args == 0)
     {
