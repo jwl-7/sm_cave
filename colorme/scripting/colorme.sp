@@ -19,40 +19,53 @@ public Plugin myinfo =
 }; 
 
 // ====[ EVENTS ]====
-public OnPluginStart() 
+public void OnPluginStart() 
 {
-    RegConsoleCmd("sm_colorme", Command_ColorMe, "Open menu to change color of player model. Usage: !colorme");
-
+    RegConsoleCmd("sm_colorme", Command_ColorMe, "Open menu with color choices. Usage: !colorme");
     mp_forcecamera = FindConVar("mp_forcecamera");
-    AddCommandListener(Listener_JoinTeam, "jointeam");
+    HookEvents();
+}
 
+public void OnMapStart()
+{
+    for (int i = 1; i <= MaxClients; i++)
+    {
+        g_bColorMenuOpen[i] = false;
+    }
 }
 
 // ====[ CLIENT EVENTS ]====
-public Action Listener_JoinTeam(int client, const char[] command, int argc)
+public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-    if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
-    {
-        if (g_bColorMenuOpen[client])
-        {
-            CancelClientMenu(client, true);
-            SetModelView(client, false);
-            g_bColorMenuOpen[client] = false;
-        }
-    }
+    int client = GetClientOfUserId(event.GetInt("userid"));
+    CloseColorMenu(client);
+}
 
-    return Plugin_Handled;
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    int client = GetClientOfUserId(event.GetInt("userid"));
+    CloseColorMenu(client);
+}
+
+public void OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast)
+{
+    int client = GetClientOfUserId(event.GetInt("userid"));
+    CloseColorMenu(client);
 }
 
 // ====[ COMMANDS ]====
 public Action Command_ColorMe(int client, int args)
 {
-    if (!IsPlayerAlive(client))
+    if (!IsValidClient(client)) 
+    {
+        return Plugin_Handled;
+    }
+    else if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be alive to use that command.");
         return Plugin_Handled;
     }
-    if (IsClientMoving(client))
+    else if (IsClientMoving(client))
     {
         CPrintToChat(client, "[{green}ColorMe{default}] {lightred}You must be standing still to use that command.");
         return Plugin_Handled;
@@ -68,6 +81,7 @@ void ShowColorMenu(int client, int selection)
 {
     Menu colorMenu = new Menu(ColorMenuHandler, MENU_ACTIONS_ALL);
     colorMenu.SetTitle("Color Me");
+
     colorMenu.AddItem("255,255,255", "None");
     colorMenu.AddItem("244,67,54", "Red");
     colorMenu.AddItem("255,152,0", "Orange");
@@ -90,6 +104,7 @@ void ShowColorMenu(int client, int selection)
     colorMenu.AddItem("96,125,139", "Blue Grey");
     colorMenu.AddItem("0,0,0", "Black");
     colorMenu.AddItem("255,215,0", "Gold");
+
     colorMenu.DisplayAt(client, selection, MENU_TIME_FOREVER);
 }
 
@@ -139,10 +154,6 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
 // ====[ THIRD-PERSON MIRROR VIEW ]====
 void SetModelView(int client, bool view)
 {
-    if (!IsPlayerAlive(client))
-    {
-        return;
-    }
     if (view)
     {
         SendConVarValue(client, mp_forcecamera, "1");
@@ -170,9 +181,31 @@ void SetModelView(int client, bool view)
 }
 
 // ====[ HELPER FUNCTIONS]====
+void HookEvents()
+{
+    HookEvent("player_spawn", OnPlayerSpawn);
+    HookEvent("player_death", OnPlayerDeath);
+    HookEvent("player_team", OnPlayerJoinTeam);
+}
+
+void CloseColorMenu(int client)
+{
+    if (g_bColorMenuOpen[client])
+    {
+        CancelClientMenu(client, true);
+        g_bColorMenuOpen[client] = false;
+    }
+}
+
+stock bool IsValidClient(int client)
+{
+    return client >= 1 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client);
+}
+
 stock bool IsClientMoving(int client)
 {
     float buffer[3];
     GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", buffer);
+    
     return (GetVectorLength(buffer) > 0.0);
 }  
