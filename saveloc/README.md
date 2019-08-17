@@ -1,5 +1,5 @@
 # SaveLoc
-This plugin allows the player to save/load locations, which preserve position/angle/velocity.
+This plugin allows players to save/load locations, which preserve position/angle/velocity.
 
 ## Commands
 * ```sm_saveloc``` - Save location. Usage: ```!saveloc <name>```

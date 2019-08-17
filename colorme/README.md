@@ -1,5 +1,5 @@
 # Color Me
-This plugin allows the player to change the color of their player model.
+This plugin allows players to change their player model color.
 
 ## Commands
 * ```sm_colorme``` - Open menu with color choices. Usage: ```!colorme```
