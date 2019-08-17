@@ -1,5 +1,5 @@
 #include <sourcemod>
-#include <multicolors>
+#include <sourcemod-colors>
 
 #define HIDE_CROSSHAIR 1 << 8
 #define HIDE_RADAR 1 << 12
@@ -132,7 +132,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
             int b = StringToInt(rgb[2]);
             SetEntityRenderColor(client, r, g, b);
 
-            CPrintToChat(client, "%s {grey}Player model set to {lightblue}%s", MSG_PREFIX, colorName);
+            CPrintToChat(client, "%s {grey}Player model set to {blue}%s", MSG_PREFIX, colorName);
 
             ShowColorMenu(client, menu.Selection);
         }
