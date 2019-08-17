@@ -1,12 +1,14 @@
 #include <sourcemod>
 #include <sourcemod-colors>
 
+#pragma newdecls required
+#pragma semicolon 1
+
 #define HIDE_CROSSHAIR 1 << 8
 #define HIDE_RADAR 1 << 12
 #define MSG_PREFIX "[{green}ColorMe{default}]"
 
-Handle mp_forcecamera;
-
+static Handle mp_forcecamera;
 static bool g_bColorMenuOpen[MAXPLAYERS+1];
 
 public Plugin myinfo = 
@@ -98,7 +100,7 @@ void ShowColorMenu(int client, int selection)
     colorMenu.AddItem("139,195,74", "Light Green");
     colorMenu.AddItem("205,220,57", "Lime");
     colorMenu.AddItem("255,193,7", "Amber");
-    colorMenu.AddItem("255,87,34", "Deep Orange")
+    colorMenu.AddItem("255,87,34", "Deep Orange");
     colorMenu.AddItem("121,85,72", "Brown");
     colorMenu.AddItem("158,158,158", "Grey");
     colorMenu.AddItem("96,125,139", "Blue Grey");
@@ -122,7 +124,7 @@ public int ColorMenuHandler(Menu menu, MenuAction action, int client, int choice
         case MenuAction_Select:
         {
             char colorValue[12];
-            char colorName[32]
+            char colorName[32];
             char rgb[3][4];
             menu.GetItem(choice, colorValue, sizeof(colorValue), _, colorName, sizeof(colorName));
             ExplodeString(colorValue, ",", rgb, sizeof(rgb), sizeof(rgb[]));
