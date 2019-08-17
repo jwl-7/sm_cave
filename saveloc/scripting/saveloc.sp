@@ -1,7 +1,7 @@
 #include <sourcemod>
+#include <sourcemod-colors>
 #include <sdktools>
 #include <cstrike>
-#include <multicolors>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -357,7 +357,7 @@ void SaveLocation(int client, char[] name)
     g_aLocationName.PushString(name);
     g_aLocationCreator.PushString(creator);
 
-    CPrintToChat(client, "%s {grey}Saved {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
+    CPrintToChat(client, "%s {grey}Saved {yellow}#%i {lightgreen}%s", MSG_PREFIX, id, name);
 
     for (int i = 1; i <= MaxClients; i++)
     {
@@ -397,7 +397,7 @@ void LoadLocation(int client, int id)
 
         if (StrEqual(clientName, creator))
         {
-            CPrintToChat(client, "%s {grey}Loaded {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
+            CPrintToChat(client, "%s {grey}Loaded {yellow}#%i {lightgreen}%s", MSG_PREFIX, id, name);
         }
         else
         {
@@ -410,7 +410,7 @@ void LoadLocation(int client, int id)
             else
             {
                 CPrintToChat(client, 
-                    "%s {grey}Loaded {yellow}#%i {olive}%s {default}| {grey}Created by {lime}%s", 
+                    "%s {grey}Loaded {yellow}#%i {lightgreen}%s {default}| {grey}Created by {lime}%s", 
                     MSG_PREFIX, id, name, creator);
             }
         }
@@ -424,7 +424,7 @@ void NameLocation(int client, int id, char[] name)
 {
     g_aLocationName.SetString(id, name);
 
-    CPrintToChat(client, "%s {grey}Named {yellow}#%i {olive}%s", MSG_PREFIX, id, name);
+    CPrintToChat(client, "%s {grey}Named {yellow}#%i {lightgreen}%s", MSG_PREFIX, id, name);
 
     for (int i = 1; i <= MaxClients; i++)
     {
