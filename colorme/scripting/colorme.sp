@@ -62,12 +62,12 @@ public Action Command_ColorMe(int client, int args)
     }
     else if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (IsClientMoving(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be standing still to use that command.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}You must be standing still to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
 

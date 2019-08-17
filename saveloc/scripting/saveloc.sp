@@ -92,7 +92,7 @@ public Action Command_SaveLoc(int client, int args)
         }
         else
         {
-            CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
+            CPrintToChat(client, "%s {red}Location name must start with a letter and be unique.", MSG_PREFIX);
         }
     }
     else
@@ -111,12 +111,12 @@ public Action Command_LoadLoc(int client, int args)
     }
     else if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "%s {lightred}No saved locations found.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}No saved locations found.", MSG_PREFIX);
         return Plugin_Handled;
     }
 
@@ -150,7 +150,7 @@ public Action Command_LoadLoc(int client, int args)
         }
         else
         {
-            CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
+            CPrintToChat(client, "%s {red}Location not found.", MSG_PREFIX);
         }
     }
     else
@@ -169,7 +169,7 @@ public Action Command_NameLoc(int client, int args)
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "%s {lightred}No saved locations found.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}No saved locations found.", MSG_PREFIX);
         return Plugin_Handled;
     }
 
@@ -190,11 +190,11 @@ public Action Command_NameLoc(int client, int args)
         }
         else if (!IsClientLocationCreator(client, id))
         {
-            CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
+            CPrintToChat(client, "%s {red}You can't name another player's location.", MSG_PREFIX);
         }
         else
         {
-            CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
+            CPrintToChat(client, "%s {red}Location name must start with a letter and be unique.", MSG_PREFIX);
         }
     }
     else if (args == 2)
@@ -215,16 +215,16 @@ public Action Command_NameLoc(int client, int args)
             }
             else if (!IsClientLocationCreator(client, id))
             {
-                CPrintToChat(client, "%s {lightred}You can't name another player's location.", MSG_PREFIX);
+                CPrintToChat(client, "%s {red}You can't name another player's location.", MSG_PREFIX);
             }
             else
             {
-                CPrintToChat(client, "%s {lightred}Location name must start with a letter and be unique.", MSG_PREFIX);
+                CPrintToChat(client, "%s {red}Location name must start with a letter and be unique.", MSG_PREFIX);
             }
         }
         else
         {
-            CPrintToChat(client, "%s {lightred}Location not found.", MSG_PREFIX);
+            CPrintToChat(client, "%s {red}Location not found.", MSG_PREFIX);
         }
     }
     else
@@ -243,12 +243,12 @@ public Action Command_LocMenu(int client, int args)
     }
     else if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}You must be alive to use that command.", MSG_PREFIX);
         return Plugin_Handled;
     }
     else if (g_aPosition.Length == 0)
     {
-        CPrintToChat(client, "%s {lightred}No saved locations found.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}No saved locations found.", MSG_PREFIX);
         return Plugin_Handled;
     }
 
@@ -370,7 +370,7 @@ void LoadLocation(int client, int id)
 {
     if (!IsPlayerAlive(client))
     {
-        CPrintToChat(client, "%s {lightred}You must be alive to use that command.", MSG_PREFIX);
+        CPrintToChat(client, "%s {red}You must be alive to use that command.", MSG_PREFIX);
         return;
     }
 
