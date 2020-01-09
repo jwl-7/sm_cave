@@ -6,7 +6,7 @@
         {
             "label": "SourcePawn Compile",
             "type": "shell",
-            
+
             "windows": {
                 "command": "path\\to\\spcomp.exe"
             },
