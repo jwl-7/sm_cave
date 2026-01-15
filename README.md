@@ -1,7 +1,7 @@
 # sm_cave
 various SourceMod plugins for CS:GO
 
-<img src="https://i.imgur.com/KgsyLdb.png" width="300" height="300">
+<img src="https://github.com/user-attachments/assets/7e8b231c-1e17-4a91-bdf2-da357d9830b3" width="300" height="300">
 
 ## Plugins
 * [SaveLoc](./saveloc) - Allows players to save/load locations, which preserve position/angle/velocity.
