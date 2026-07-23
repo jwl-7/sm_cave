@@ -9,6 +9,3 @@ various SourceMod plugins for CS:GO
 
 ## Requirements
 * SourceMod 1.9.0
-
-## License
-This project is released under the GNU GPL License - see the [LICENSE](LICENSE) file for details
